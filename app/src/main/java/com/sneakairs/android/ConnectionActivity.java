@@ -6,17 +6,24 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.sneakairs.android.models.NavigationPoint;
+
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
@@ -24,7 +31,9 @@ import org.androidannotations.annotations.ViewById;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -32,6 +41,7 @@ import java.util.UUID;
 public class ConnectionActivity extends AppCompatActivity {
 
     Context context;
+    private static final String TAG = "ConnectionActivity";
 
     private ConnectedThread connectedThread;
     BluetoothAdapter bluetoothAdapter = null;
@@ -44,6 +54,12 @@ public class ConnectionActivity extends AppCompatActivity {
     @ViewById(R.id.btn_refresh) ImageView refreshButton;
     private ProgressDialog progressDialog;
 
+    private final int LOCATION_QUERY_INTERVAL = 1000;
+
+    private double latitude, longitude;
+    private String latitudeString, longitudeString;
+    Gson gson;
+
     String address = "";
     protected boolean isBtConnected = false;
     protected static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
@@ -51,15 +67,35 @@ public class ConnectionActivity extends AppCompatActivity {
     Handler bluetoothIn;
     final int handlerState = 0;
 
+    ArrayList<NavigationPoint> navigationPointList;
+
+    public class NavigationPointList extends ArrayList<NavigationPoint> {}
+
     @AfterViews
     protected void afterViews() {
         context = this;
+        gson = new Gson();
         //receive the address of the bluetooth device
         Intent newint = getIntent();
         address = newint.getStringExtra(MainActivity_.EXTRA_ADDRESS);
 
 //        new ConnectBT().execute();
+        if (getIntent().hasExtra("navigationPointsList")) {
 
+//            navigationPointList = gson.fromJson(getIntent().getStringExtra("navigationPointsList"), NavigationPointList.class);
+
+            navigationPointList = App.navigationPointList;
+            for (NavigationPoint navigationPoint : navigationPointList)
+                Log.d(TAG, navigationPoint.getLatitudeString() + " | " + navigationPoint.getLongitudeString());
+
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    startNavigation();
+                    handler.postDelayed(this, LOCATION_QUERY_INTERVAL);
+                }
+            }, LOCATION_QUERY_INTERVAL);
+        }
 
         bluetoothIn = new Handler() {
             public void handleMessage(android.os.Message msg) {
@@ -121,7 +157,7 @@ public class ConnectionActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         //Get the MAC address from the DeviceListActivty via EXTRA
-        address = intent.getStringExtra(MainActivity_.EXTRA_ADDRESS);
+        address = intent.getStringExtra("address");
 
         //create device and set the MAC address
         BluetoothDevice device = bluetoothAdapter.getRemoteDevice(address);
@@ -263,11 +299,72 @@ public class ConnectionActivity extends AppCompatActivity {
                 mmOutStream.write(msgBuffer);                //write bytes over BT connection via outstream
             } catch (IOException e) {
                 //if you cannot write, close the application
-                Toast.makeText(getBaseContext(), "Connection Failure", Toast.LENGTH_LONG).show();
+                Log.e(TAG, e.getMessage());
                 finish();
 
             }
         }
+    }
+
+    private void getLocation() {
+        LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
+        Location location = getLastKnownLocation(service);
+
+        // TODO: Use the app's lat long..
+        if (location != null) {
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+
+            latitudeString = String.valueOf(latitude);
+            longitudeString = String.valueOf(longitude);
+
+            latitudeString = latitudeString.substring(0, 6);
+            longitudeString = longitudeString.substring(0, 6);
+            Log.d(TAG, "Fetched Location = " + latitudeString + " | " + longitudeString);
+        }
+    }
+    @SuppressWarnings("MissingPermission")
+    private Location getLastKnownLocation(LocationManager mLocationManager) {
+        mLocationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+        List<String> providers = mLocationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            Location l = mLocationManager.getLastKnownLocation(provider);
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                // Found best last known location: %s", l);
+                bestLocation = l;
+            }
+        }
+        return bestLocation;
+    }
+
+    @Background
+    protected void startNavigation() {
+
+        getLocation();
+
+        for (int i = 0; i < navigationPointList.size(); i++) {
+            NavigationPoint navigationPoint = navigationPointList.get(i);
+            if (navigationPoint.getLatitudeString().trim().equals(latitudeString.trim())
+                    && navigationPoint.getLatitudeString().trim().equals(latitudeString.trim())) {
+                String maneuver = navigationPoint.getManeuver();
+
+                if (maneuver.trim().equals("turn-left".trim())) {
+                    connectedThread.write("L");
+                    Log.d(TAG, "Sent L");
+                }
+
+                if (maneuver.trim().equals("turn-right".trim())) {
+                    connectedThread.write("R");
+                    Log.d(TAG, "Sent R");
+                }
+            }
+        }
+
+
     }
 }
 

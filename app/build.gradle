@@ -32,8 +32,10 @@ apt {
 }
 
 ext {
-    AAVersion = "4.2.0"
-    supportVersion = "25.0.0"
+    AAVersion = "4.3.0"
+    supportVersion = "25.3.1"
+    gmsVersion = "10.0.1"
+    gsonVersion = "2.4"
 }
 
 dependencies {
@@ -41,14 +43,16 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.1.0'
     testCompile 'junit:junit:4.12'
     compile "com.android.support:design:$supportVersion"
     compile "com.android.support:support-v4:$supportVersion"
     compile "com.android.support:appcompat-v7:$supportVersion"
     compile "com.android.support:preference-v7:$supportVersion"
     compile "com.android.support:recyclerview-v7:$supportVersion"
-    compile 'com.android.support:support-compat:25.1.1'
+    compile "com.google.android.gms:play-services:$gmsVersion"
+    compile "com.android.support:support-compat:$supportVersion"
+    compile 'com.android.volley:volley:1.0.0'
+    compile "com.google.code.gson:gson:$gsonVersion"
 
     apt "org.androidannotations:androidannotations:$AAVersion"
     compile "org.androidannotations:androidannotations-api:$AAVersion"

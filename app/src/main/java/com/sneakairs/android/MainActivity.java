@@ -50,82 +50,9 @@ public class MainActivity extends AppCompatActivity {
     BluetoothAdapter bluetoothAdapter = null;
     Set pairedDevices;
 
-    /*private SmoothBluetooth.Listener mListener = new SmoothBluetooth.Listener() {
-        @Override
-        public void onBluetoothNotSupported() {
-            //device does not support bluetooth
-        }
-
-        @Override
-        public void onBluetoothNotEnabled() {
-            //bluetooth is disabled, probably call Intent request to enable bluetooth
-        }
-
-        @Override
-        public void onConnecting(Device device) {
-            //called when connecting to particular device
-        }
-
-        @Override
-        public void onConnected(Device device) {
-            //called when connected to particular device
-        }
-
-        @Override
-        public void onDisconnected() {
-            //called when disconnected from device
-        }
-
-        @Override
-        public void onConnectionFailed(Device device) {
-            //called when connection failed to particular device
-        }
-
-        @Override
-        public void onDiscoveryStarted() {
-            //called when discovery is started
-        }
-
-        @Override
-        public void onDiscoveryFinished() {
-            //called when discovery is finished
-        }
-
-        @Override
-        public void onNoDevicesFound() {
-            //called when no devices found
-        }
-
-        @Override
-        public void onDevicesFound(List<Device> deviceList, SmoothBluetooth.ConnectionCallback connectionCallback) {
-
-            List<String> foundDevices = new ArrayList<String>();
-
-            for (Device device : deviceList) {
-                foundDevices.add(device.getName());
-            }
-
-            adapter=new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, foundDevices);
-        }
-
-        @Override
-        public void onDataReceived(int data) {
-            //receives all bytes
-        }
-    };*/
 
     @Click(R.id.button_search)
     protected void searchForDevices() {
-//        mSmoothBluetooth.doDiscovery();
-
-//        IntentFilter filter = new IntentFilter();
-//
-//        filter.addAction(BluetoothDevice.ACTION_FOUND);
-//        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
-//        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-//        registerReceiver(mReceiver, filter);
-//        bluetoothAdapter.startDiscovery();
-
         pairedDevicesList();
 
 
@@ -145,9 +72,6 @@ public class MainActivity extends AppCompatActivity {
             Intent turnBTon = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(turnBTon,1);
         }
-
-//        mSmoothBluetooth = new SmoothBluetooth(this, mListener);
-
     }
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -206,6 +130,8 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(context, ConnectionActivity_.class);
                 //Change the activity.
                 intent.putExtra(EXTRA_ADDRESS, address); //this will be received at ledControl (class) Activity
+                if (getIntent().hasExtra("navigationPointsList"))
+                    intent.putExtra("navigationPointsList", getIntent().getStringExtra("navigationPointsList"));
                 startActivity(intent);
             }
         }); //Method called when the device from the list is clicked
