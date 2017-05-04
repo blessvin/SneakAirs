@@ -1,5 +1,6 @@
 package com.sneakairs.android;
 
+import android.app.Dialog;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -7,6 +8,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.preference.EditTextPreference;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -19,6 +25,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
+import com.sneakairs.android.models.ReminderGeoPoint;
+import com.sneakairs.android.models.ReminderGeoPointList;
+import com.sneakairs.android.utils.CacheUtils;
+import com.sneakairs.android.utils.Constants;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
@@ -35,11 +45,12 @@ public class ReminderActivity extends AppCompatActivity implements GoogleApiClie
     GoogleApiClient googleApiClient;
 
     Double latitude, longitude;
+    Gson gson;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        gson = new Gson();
         supportMapFragment = SupportMapFragment.newInstance();
         supportFragmentManager = getSupportFragmentManager();
         supportMapFragment.getMapAsync(this);
@@ -132,6 +143,31 @@ public class ReminderActivity extends AppCompatActivity implements GoogleApiClie
 
     @Click(R.id.submit_button)
     protected void submitButtonClicked() {
-        Toast.makeText(this, "Reminder set!", Toast.LENGTH_LONG).show();
+        showRangeSelectionDialog();
+    }
+
+    private void showRangeSelectionDialog() {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.range_selection_dialog);
+
+        final EditText range = (EditText) dialog.findViewById(R.id.range_edit_text);
+        Button submitButton = (Button) dialog.findViewById(R.id.submit_reminder);
+
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (CacheUtils.get(Constants.KEY_REMINDER_GEO_POINTS) != null) {
+                    List<ReminderGeoPoint> reminderGeoPoints = gson.fromJson(CacheUtils.get(Constants.KEY_REMINDER_GEO_POINTS), ReminderGeoPointList.class);
+                    reminderGeoPoints.add(new ReminderGeoPoint(latitude, longitude, Integer.valueOf(range.getText().toString())));
+
+                    CacheUtils.set(getApplicationContext(), Constants.KEY_REMINDER_GEO_POINTS, gson.toJson(reminderGeoPoints));
+                    dialog.dismiss();
+                    finish();
+                }
+            }
+        });
+
+        dialog.show();
     }
 }

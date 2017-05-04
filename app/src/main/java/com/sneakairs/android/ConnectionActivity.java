@@ -345,13 +345,16 @@ public class ConnectionActivity extends AppCompatActivity {
     protected void startNavigation() {
 
         getLocation();
-
+        Location userLocation = new Location("user");
         for (int i = 0; i < navigationPointList.size(); i++) {
             NavigationPoint navigationPoint = navigationPointList.get(i);
-            if (navigationPoint.getLatitudeString().trim().equals(latitudeString.trim())
-                    && navigationPoint.getLatitudeString().trim().equals(latitudeString.trim())) {
-                String maneuver = navigationPoint.getManeuver();
 
+            userLocation.setLatitude(latitude); userLocation.setLongitude(longitude);
+            float distance = userLocation.distanceTo(navigationPoint.getLocation());
+            Log.d(TAG, "Distance = " + String.valueOf(distance));
+
+            if (distance < 15) {
+                String maneuver = navigationPoint.getManeuver();
                 if (maneuver.trim().equals("turn-left".trim())) {
                     connectedThread.write("L");
                     Log.d(TAG, "Sent L");
@@ -362,6 +365,21 @@ public class ConnectionActivity extends AppCompatActivity {
                     Log.d(TAG, "Sent R");
                 }
             }
+
+//            if (navigationPoint.getLatitudeString().trim().equals(latitudeString.trim())
+//                    && navigationPoint.getLatitudeString().trim().equals(latitudeString.trim())) {
+//                String maneuver = navigationPoint.getManeuver();
+//
+//                if (maneuver.trim().equals("turn-left".trim())) {
+//                    connectedThread.write("L");
+//                    Log.d(TAG, "Sent L");
+//                }
+//
+//                if (maneuver.trim().equals("turn-right".trim())) {
+//                    connectedThread.write("R");
+//                    Log.d(TAG, "Sent R");
+//                }
+//            }
         }
 
 

@@ -1,5 +1,7 @@
 package com.sneakairs.android.models;
 
+import android.location.Location;
+
 /**
  * Created by sumodkulkarni on 03/04/17.
  */
@@ -10,8 +12,10 @@ public class NavigationPoint {
     private String latitudeString;
     private String longitudeString;
     private String maneuver;
+    private Location location;
 
     public NavigationPoint() {
+        this.location = new Location("navigation_point_location");
     }
 
     public NavigationPoint(double latitude, double longitude, String maneuver) {
@@ -21,6 +25,8 @@ public class NavigationPoint {
 
         this.latitudeString = String.valueOf(latitude).substring(0, 6);
         this.longitudeString = String.valueOf(longitude).substring(0, 6);
+        this.location = new Location("navigation_point_location");
+        this.location.setLatitude(latitude); this.setLongitude(longitude);
     }
 
     public double getLatitude() {
@@ -30,6 +36,8 @@ public class NavigationPoint {
     public void setLatitude(double latitude) {
         this.latitude = latitude;
         this.latitudeString = String.valueOf(latitude).substring(0, 6);
+        this.location.setLatitude(latitude);
+
     }
 
     public double getLongitude() {
@@ -39,6 +47,7 @@ public class NavigationPoint {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
         this.longitudeString = String.valueOf(longitude).substring(0, 6);
+        this.location.setLongitude(longitude);
     }
 
     public String getLatitudeString() {
@@ -63,5 +72,13 @@ public class NavigationPoint {
 
     public void setManeuver(String maneuver) {
         this.maneuver = maneuver;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 }
