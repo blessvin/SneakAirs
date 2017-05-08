@@ -215,48 +215,6 @@ public class ConnectionActivity extends AppCompatActivity {
         }
     }
 
-    private class ConnectBT extends AsyncTask<Void, Void, Void> {  // UI thread {
-        private boolean ConnectSuccess = true; //if it's here, it's almost connected
-
-        @Override
-        protected void onPreExecute() {
-            progressDialog = ProgressDialog.show(context, "Connecting...", "Please wait!!!");  //show a progress dialog
-        }
-
-        @Override
-        protected Void doInBackground(Void... devices) {
-        //while the progress dialog is shown, the connection is done in background
-            try {
-                if (bluetoothSocket == null || !isBtConnected) {
-                    bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();//get the mobile bluetooth device
-                    BluetoothDevice dispositivo = bluetoothAdapter.getRemoteDevice(address);//connects to the device's address and checks if it's available
-                    bluetoothSocket = dispositivo.createInsecureRfcommSocketToServiceRecord(myUUID);//create a RFCOMM (SPP) connection
-                    BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-                    bluetoothSocket.connect();//start connection
-                }
-            }
-            catch (IOException e) {
-                ConnectSuccess = false;//if the try failed, you can check the exception here
-            }
-            return null;
-        }
-        @Override
-        protected void onPostExecute(Void result) //after the doInBackground, it checks if everything went fine
-        {
-            super.onPostExecute(result);
-
-            if (!ConnectSuccess) {
-                Toast.makeText(context, "Connection Failed. Is it a SPP Bluetooth? Try again.", Toast.LENGTH_LONG).show();
-                finish();
-            }
-            else {
-                Toast.makeText(context, "Connected.", Toast.LENGTH_LONG).show();
-                isBtConnected = true;
-            }
-            progressDialog.dismiss();
-        }
-    }
-
     private class ConnectedThread extends Thread {
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
