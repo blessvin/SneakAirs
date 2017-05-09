@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 
 import com.sneakairs.android.App;
 
+import static com.sneakairs.android.App.context;
+
 
 /**
  * Created by sumodkulkarni on 03/04/17.
@@ -15,10 +17,12 @@ public class CacheUtils {
 
     public static final String MyPREFERENCES = "MyPrefs";
 
+    static {
+        sharedpreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+    }
 
     public static void set(Context context, String key, String data) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString(key, data);
         editor.apply();
     }

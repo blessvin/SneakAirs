@@ -1,4 +1,4 @@
-package com.sneakairs.android;
+package com.sneakairs.android.activities;
 
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -8,11 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -20,6 +17,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.sneakairs.android.App;
+
+import com.sneakairs.android.R;
 import com.sneakairs.android.models.NavigationPoint;
 
 import org.androidannotations.annotations.AfterViews;
@@ -47,6 +47,8 @@ public class ConnectionActivity extends AppCompatActivity {
     BluetoothAdapter bluetoothAdapter = null;
     BluetoothSocket bluetoothSocket = null;
     private StringBuilder recDataString = new StringBuilder();
+
+    private String receivedString = "";
 
     @ViewById(R.id.input_edit_text) EditText inputEditText;
     @ViewById(R.id.send_btn) ImageView sendButton;
@@ -100,14 +102,19 @@ public class ConnectionActivity extends AppCompatActivity {
         bluetoothIn = new Handler() {
             public void handleMessage(android.os.Message msg) {
                 if (msg.what == handlerState) {
-                    String readMessage = (String) msg.obj;                                                                // msg.arg1 = bytes from connect thread
-                    recDataString.append(readMessage);
-                    int endOfLineIndex = recDataString.indexOf("~");
-                    if (endOfLineIndex > 0) {
-                        String dataInPrint = recDataString.substring(0, endOfLineIndex);
-                        displayTextView.setText(Calendar.getInstance().getTime().toString() + "\n" + "Data Received = " + dataInPrint);
-                        recDataString.delete(0, recDataString.length());
-                    }
+                    String readMessage = (String) msg.obj; // msg.arg1 = bytes from connect thread
+
+                    Log.d(TAG, "Received in Handler = " + readMessage);
+//                    recDataString.append(readMessage);
+
+                    receivedString = receivedString + "\n" + Calendar.getInstance().getTime().toString() + " | " + readMessage;
+                    displayTextView.setText(receivedString);
+//                    int endOfLineIndex = recDataString.indexOf("~");
+//                    if (endOfLineIndex > 0) {
+//                        String dataInPrint = recDataString.substring(0, endOfLineIndex);
+//                        displayTextView.setText(Calendar.getInstance().getTime().toString() + "\n" + "Data Received = " + dataInPrint);
+//                        recDataString.delete(0, recDataString.length());
+//                    }
                 }
             }
         };
@@ -141,6 +148,13 @@ public class ConnectionActivity extends AppCompatActivity {
         } else {
             Toast.makeText(context, "Enter some text to Send", Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Click(R.id.btn_refresh)
+    public void refereshButtonClicked() {
+        displayTextView.setText("");
+        receivedString = "";
+
     }
 
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
@@ -244,6 +258,7 @@ public class ConnectionActivity extends AppCompatActivity {
                     bytes = mmInStream.read(buffer);            //read bytes from input buffer
                     String readMessage = new String(buffer, 0, bytes);
                     // Send the obtained bytes to the UI Activity via handler
+                    Log.d(TAG, "Received in inputStream = " + readMessage);
                     bluetoothIn.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
                 } catch (IOException e) {
                     break;

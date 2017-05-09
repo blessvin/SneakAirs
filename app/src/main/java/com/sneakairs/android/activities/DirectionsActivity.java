@@ -1,4 +1,4 @@
-package com.sneakairs.android;
+package com.sneakairs.android.activities;
 
 import android.content.Intent;
 import android.hardware.SensorManager;
@@ -32,6 +32,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
+import com.sneakairs.android.App;
+
+import com.sneakairs.android.R;
 import com.sneakairs.android.models.NavigationPoint;
 import com.sneakairs.android.utils.CacheUtils;
 

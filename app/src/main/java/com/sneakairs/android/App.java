@@ -3,6 +3,7 @@ package com.sneakairs.android;
 import android.app.Application;
 import android.content.Context;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.sneakairs.android.models.NavigationPoint;
 
 import java.util.ArrayList;
@@ -13,8 +14,9 @@ import java.util.ArrayList;
 
 public class App extends Application {
 
-    private static Context context;
+    public static Context context;
     public static ArrayList<NavigationPoint> navigationPointList = new ArrayList<>();
+    public static LatLng userGeoPoint;
 
     @Override
     public void onCreate() {

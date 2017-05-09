@@ -1,4 +1,4 @@
-package com.sneakairs.android;
+package com.sneakairs.android.activities.reminders;
 
 import android.app.Dialog;
 import android.location.Criteria;
@@ -25,6 +25,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
+import com.sneakairs.android.R;
 import com.sneakairs.android.models.ReminderGeoPoint;
 import com.sneakairs.android.models.ReminderGeoPointList;
 import com.sneakairs.android.utils.CacheUtils;
@@ -163,7 +164,6 @@ public class ReminderActivity extends AppCompatActivity implements GoogleApiClie
 
                     CacheUtils.set(getApplicationContext(), Constants.KEY_REMINDER_GEO_POINTS, gson.toJson(reminderGeoPoints));
                     dialog.dismiss();
-                    finish();
                 }
             }
         });

@@ -4,7 +4,7 @@
     android:id="@+id/activity_directions"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sneakairs.android.DirectionsActivity">
+    tools:context="com.sneakairs.android.activities.DirectionsActivity">
 
     <LinearLayout
         android:id="@+id/linearLayout_views"

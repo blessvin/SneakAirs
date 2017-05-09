@@ -8,6 +8,8 @@ public class ReminderGeoPoint {
     Double latitude;
     Double longitude;
     int range;
+    String message;
+    boolean isDeleted = false;
 
     public ReminderGeoPoint() {
     }
@@ -16,6 +18,21 @@ public class ReminderGeoPoint {
         this.latitude = latitude;
         this.longitude = longitude;
         this.range = range;
+    }
+
+    public ReminderGeoPoint(Double latitude, Double longitude, int range, String message) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.range = range;
+        this.message = message;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 
     public Double getLatitude() {
@@ -34,11 +51,19 @@ public class ReminderGeoPoint {
         this.longitude = longitude;
     }
 
-    public int getRadius() {
+    public int getRange() {
         return range;
     }
 
-    public void setRadius(int range) {
+    public void setRange(int range) {
         this.range = range;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }
