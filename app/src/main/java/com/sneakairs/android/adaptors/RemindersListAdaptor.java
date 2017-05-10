@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.sneakairs.android.App;
 import com.sneakairs.android.R;
 import com.sneakairs.android.models.ReminderGeoPoint;
@@ -58,7 +59,7 @@ public class RemindersListAdaptor extends RecyclerView.Adapter<RemindersListAdap
 
         holder.message.setText(reminderGeoPoint.getMessage());
 
-        String distance = String.valueOf(LocationUtils.calculateDistanceFromUser(App.userGeoPoint, reminderGeoPoint.getLatitude(), reminderGeoPoint.getLongitude())) + "km";
+        String distance = String.valueOf(LocationUtils.calculateDistanceInKms( new LatLng(App.userGeoPoint.latitude, App.userGeoPoint.longitude), new LatLng(reminderGeoPoint.getLatitude(), reminderGeoPoint.getLongitude()))) + "km";
         holder.distance.setText(distance);
 
         holder.deleteButton.setOnClickListener(new View.OnClickListener() {
