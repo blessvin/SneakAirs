@@ -46,7 +46,8 @@ public class MusicService extends Service {
 
                     Log.d(TAG, "override = " + App.overRideMusicPlayback);
 
-                    if (App.overRideMusicPlayback) {
+                    if (App.overRideMusicPlayback && intent.hasExtra(Constants.shouldPlayMusic)) {
+
                         shouldPlayMusic = intent.getBooleanExtra(Constants.shouldPlayMusic, false);
 
                         if (shouldPlayMusic && !mediaPlayer.isPlaying()) {
@@ -57,7 +58,11 @@ public class MusicService extends Service {
                             mediaPlayer.pause();
                         }
 
-                    } else {
+                    } else if (App.overRideMusicPlayback && !mediaPlayer.isPlaying()){
+                        mediaPlayer.start();
+                        mediaPlayer.isLooping();
+                    }
+                    else {
                         if (mediaPlayer.isPlaying()) {
                             mediaPlayer.pause();
                         }

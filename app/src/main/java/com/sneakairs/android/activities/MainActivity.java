@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
                 arduinoLogo.startAnimation(animFadeIn);
                 androidDevice.startAnimation(animFadeOut);
             }
-        }, 3000);
+        }, 2000);
     }
 
     @Click(R.id.arduino_logo)
@@ -161,6 +161,6 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
                 andruidoLogo.startAnimation(animZoomIn);
                 arduinoLogo.startAnimation(animZoomOut);
             }
-        }, 3000);
+        }, 2000);
     }
 }

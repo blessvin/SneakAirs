@@ -11,6 +11,7 @@ import android.widget.ImageView;
 
 import com.sneakairs.android.App;
 import com.sneakairs.android.R;
+import com.sneakairs.android.services.MusicService;
 import com.sneakairs.android.utils.Constants;
 
 import org.androidannotations.annotations.AfterViews;
@@ -50,9 +51,11 @@ public class MusicActivity extends AppCompatActivity {
             musicBroadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    if (App.overRideMusicPlayback && intent.getBooleanExtra(Constants.shouldPlayMusic, false)) {
-                        playButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_pause));
-                    } else playButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_play));
+                    if (App.overRideMusicPlayback && intent.hasExtra(Constants.shouldPlayMusic)) {
+                        setPlayButtonImage(intent.getBooleanExtra(Constants.shouldPlayMusic, false));
+
+                    } else if (App.overRideMusicPlayback) setPlayButtonImage(true);
+                    else setPlayButtonImage(false);
                 }
             };
             registerReceiver(musicBroadcastReceiver, new IntentFilter(Constants.MUSIC_UPDATE_INTENT_FILTER));
@@ -61,15 +64,20 @@ public class MusicActivity extends AppCompatActivity {
 
     @Click(R.id.button_play)
     protected void toggleMusic() {
+
         App.overRideMusicPlayback = !App.overRideMusicPlayback;
-        if (App.overRideMusicPlayback) {
-            playButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_play));
-        } else playButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_pause));
+        setPlayButtonImage(App.overRideMusicPlayback);
 
         Log.d(TAG, "App.override = " + App.overRideMusicPlayback);
 
         Intent intent = new Intent(Constants.MUSIC_UPDATE_INTENT_FILTER);
         sendBroadcast(intent);
+    }
+
+    private void setPlayButtonImage(boolean isPlaying) {
+        if (isPlaying)
+            playButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_pause));
+        else playButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_play));
     }
 
     @Click(R.id.button_skip_previous)

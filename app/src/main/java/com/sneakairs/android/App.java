@@ -31,7 +31,7 @@ public class App extends Application {
     public static List<NavigationPoint> navigationPoints = new ArrayList<>();
     public static String deviceMACAddress = "98:D3:31:20:05:CC";
     public static boolean shouldPlayMusic = false;
-    public static boolean overRideMusicPlayback = true;
+    public static boolean overRideMusicPlayback = false;
 
     public static boolean isBluetoothServiceRunning = false;
     public static boolean isMusicServiceRunning = false;
