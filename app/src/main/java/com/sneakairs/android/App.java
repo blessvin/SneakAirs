@@ -28,7 +28,7 @@ public class App extends Application {
     public static LatLng userGeoPoint;
     public static List<ReminderGeoPoint> remindersList = new ArrayList<>();
     public static List<NavigationPoint> navigationPoints = new ArrayList<>();
-    public static String deviceMACAddress = "";
+    public static String deviceMACAddress = "98:D3:31:20:05:CC";
     public static boolean shouldPlayMusic = false;
     public static boolean overRideMusicPlayback = true;
 

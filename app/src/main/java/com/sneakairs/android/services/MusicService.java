@@ -69,7 +69,7 @@ public class MusicService extends Service {
 
         registerReceiver(musicBroadcastReceiver, new IntentFilter(Constants.MUSIC_UPDATE_INTENT_FILTER));
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override
