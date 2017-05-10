@@ -9,18 +9,29 @@ import com.parse.ParseGeoPoint;
 
 public class LocationUtils {
 
-    public static double calculateDistanceFromUser(LatLng userGeoPoint, double lat2, double lon2) {
-        double lon1 = userGeoPoint.latitude; double lat1 = userGeoPoint.longitude;
-        double earthRadius = 6371000; //meters
-        double dLat = Math.toRadians(lat2-lat1);
-        double dLng = Math.toRadians(lon2-lon1);
-        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-                        Math.sin(dLng/2) * Math.sin(dLng/2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        float dist = (float) (earthRadius * c);
+    private static double EARTH_MEAN_RADIUS_KM = 6371.0;
 
-        return dist;
+    public static double calculateDistanceinRadians(LatLng latLng1, LatLng latLng2) {
+        double d2r = Math.PI / 180.0; // radian conversion factor
+        double lat1rad = latLng1.latitude * d2r;
+        double long1rad = latLng1.longitude * d2r;
+        double lat2rad = latLng2.latitude * d2r;
+        double long2rad = latLng2.longitude * d2r;
+        double deltaLat = lat1rad - lat2rad;
+        double deltaLong = long1rad - long2rad;
+        double sinDeltaLatDiv2 = Math.sin(deltaLat / 2.);
+        double sinDeltaLongDiv2 = Math.sin(deltaLong / 2.);
+        // Square of half the straight line chord distance between both points.
+        // [0.0, 1.0]
+        double a =
+                sinDeltaLatDiv2 * sinDeltaLatDiv2 + Math.cos(lat1rad) * Math.cos(lat2rad)
+                        * sinDeltaLongDiv2 * sinDeltaLongDiv2;
+        a = Math.min(1.0, a);
+        return 2. * Math.asin(Math.sqrt(a));
+    }
+
+    public static double calculateDistanceInKms(LatLng latLng1, LatLng latLng2) {
+        return calculateDistanceinRadians(latLng1, latLng2) * EARTH_MEAN_RADIUS_KM;
     }
 
 
