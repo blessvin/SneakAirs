@@ -91,7 +91,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @AfterViews
-    protected void afterView() {
+    protected void afterViews() {
+
+        if (App.isBluetoothServiceRunning) {
+            Intent intent = new Intent(this, StartActivity_.class);
+            startActivity(intent);
+            finish();
+        }
 
         context = this;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -169,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                 startActivity(intent);
+                finish();
             }
         }); //Method called when the device from the list is clicked
 

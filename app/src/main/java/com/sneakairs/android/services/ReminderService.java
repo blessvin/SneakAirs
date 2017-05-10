@@ -76,6 +76,8 @@ public class ReminderService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
+        App.isReminderServiceRunning = true;
+
         gson = new Gson();
         Log.d(TAG, "started");
         // Create the Realm instance
@@ -149,6 +151,8 @@ public class ReminderService extends Service {
         super.onDestroy();
         if (locationManager != null)
             locationManager.removeUpdates(locationListener);
+
+        App.isReminderServiceRunning = false;
     }
 
     @Nullable

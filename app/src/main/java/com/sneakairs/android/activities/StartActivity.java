@@ -32,6 +32,7 @@ import com.sneakairs.android.activities.reminders.ReminderActivity_;
 import com.sneakairs.android.models.ReminderGeoPoint;
 import com.sneakairs.android.models.ReminderGeoPointList;
 import com.sneakairs.android.services.BluetoothService;
+import com.sneakairs.android.services.MusicService;
 import com.sneakairs.android.services.ReminderService;
 import com.sneakairs.android.services.ReminderService_;
 import com.sneakairs.android.utils.Constants;
@@ -107,12 +108,15 @@ public class StartActivity extends AppCompatActivity {
 
         setEmptyView(true);
 
-        if (App.remindersList != null && App.remindersList.size() > 0) {
-//            Log.d(TAG, "remindersList Not Null | " + App.remindersList.get(0).getMessage());
+        if (!App.isReminderServiceRunning && App.remindersList != null && App.remindersList.size() > 0) {
             startService(new Intent(this, ReminderService_.class));
         }
 
-        startService(new Intent(this, BluetoothService.class));
+        if (!App.isBluetoothServiceRunning)
+            startService(new Intent(this, BluetoothService.class));
+
+        if (!App.isMusicServiceRunning)
+            startService(new Intent(this, MusicService.class));
     }
 
     @Override
@@ -170,6 +174,13 @@ public class StartActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+    @Click(R.id.fab_music)
+    protected void goToMusicActivity() {
+        Intent intent = new Intent(this, MusicActivity_.class);
+        startActivity(intent);
+        fabMenu.close(true);
     }
 
     @Click(R.id.fab_directions)

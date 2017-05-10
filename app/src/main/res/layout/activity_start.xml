@@ -56,9 +56,17 @@
             fab:menu_labels_hideAnimation="@anim/jump_to_down"
             fab:menu_animationDelayPerItem="0"
             fab:menu_shadowColor="#444"
-            fab:menu_colorNormal="#FFB805"
+            fab:menu_colorNormal="@color/accent"
             fab:menu_colorPressed="#F2AB00"
             fab:menu_colorRipple="#D99200">
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_music"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_action_navigate"
+                fab:fab_label="Music"
+                style="@style/MenuButtonsStyle" />
 
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/fab_directions"

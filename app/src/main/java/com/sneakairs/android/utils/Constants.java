@@ -10,7 +10,10 @@ public class Constants {
     public static final String KEY_NAVIGATION_GEO_POINTS = "navigation-geo-points";
 
     public static final String REMINDER_UPDATE_INTENT_FILTER = "reminder_update";
+    public static final String MUSIC_UPDATE_INTENT_FILTER = "music-update";
 
+    public static final String shouldPlayMusic = "should-play-music";
+    public static final String overRideMusicPlayback = "override-music";
 
     /**
      * Messages to be sent via bluetooth in different events:

@@ -60,6 +60,6 @@ dependencies {
     compile 'com.github.clans:fab:1.6.4'
     compile 'io.palaima:smoothbluetooth:0.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    testCompile 'junit:junit:4.12'
     compile 'com.parse:parse-android:1.14.1'
+    testCompile 'junit:junit:4.12'
 }

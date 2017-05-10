@@ -64,7 +64,8 @@ public class BluetoothService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-
+        App.isBluetoothServiceRunning = true;
+        Log.d(TAG, "BluetoothService started");
 
         bluetoothIn = new Handler() {
             public void handleMessage(android.os.Message msg) {
@@ -115,10 +116,16 @@ public class BluetoothService extends Service {
                 public void onReceive(Context context, Intent intent) {
                     List<ReminderGeoPoint> buzzReminders = new Gson().fromJson(intent.getStringExtra("buzzReminders"), ReminderGeoPointList.class);
 
+                    Intent musicIntent = new Intent(Constants.MUSIC_UPDATE_INTENT_FILTER);
+
                     if (buzzReminders.size() > 0) {
                         connectedThread.write(Constants.MESSAGE_EVENT_REMINGER);
                         Log.d(TAG, "Sent \'z\' to bluetooth client");
-                    }
+
+                        musicIntent.putExtra(Constants.shouldPlayMusic, true);
+                    } else musicIntent.putExtra(Constants.shouldPlayMusic, false);
+
+                    sendBroadcast(musicIntent);
                 }
             };
         }
@@ -132,6 +139,8 @@ public class BluetoothService extends Service {
     public void onDestroy() {
         super.onDestroy();
         unregisterReceiver(reminderBroadcastReceiver);
+
+        App.isBluetoothServiceRunning = false;
     }
 
     @Nullable
