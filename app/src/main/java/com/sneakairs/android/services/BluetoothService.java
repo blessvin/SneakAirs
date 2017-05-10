@@ -49,7 +49,7 @@ public class BluetoothService extends Service {
     Handler bluetoothIn;
     final int handlerState = 0;
 
-    BroadcastReceiver broadcastReceiver;
+    BroadcastReceiver reminderBroadcastReceiver;
 
     @Override
     public void onCreate() {
@@ -109,21 +109,21 @@ public class BluetoothService extends Service {
         //If it is not an exception will be thrown in the write method and finish() will be called
         connectedThread.write("z");
 
-        if (broadcastReceiver == null) {
-            broadcastReceiver = new BroadcastReceiver() {
+        if (reminderBroadcastReceiver == null) {
+            reminderBroadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     List<ReminderGeoPoint> buzzReminders = new Gson().fromJson(intent.getStringExtra("buzzReminders"), ReminderGeoPointList.class);
 
                     if (buzzReminders.size() > 0) {
-                        connectedThread.write("z");
+                        connectedThread.write(Constants.MESSAGE_EVENT_REMINGER);
                         Log.d(TAG, "Sent \'z\' to bluetooth client");
                     }
                 }
             };
         }
 
-        registerReceiver(broadcastReceiver, new IntentFilter(Constants.REMINDER_UPDATE_INTENT_FILTER));
+        registerReceiver(reminderBroadcastReceiver, new IntentFilter(Constants.REMINDER_UPDATE_INTENT_FILTER));
 
         return START_STICKY;
     }
@@ -131,7 +131,7 @@ public class BluetoothService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(broadcastReceiver);
+        unregisterReceiver(reminderBroadcastReceiver);
     }
 
     @Nullable
