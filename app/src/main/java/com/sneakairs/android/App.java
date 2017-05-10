@@ -40,6 +40,8 @@ public class App extends Application {
 
     public static ParseGeoPoint navigationStartPoint;
     public static ParseGeoPoint navigationEndPoint;
+    public static int distanceCovered = 0;
+    public static int checkPointsCovered = 0;
 
 
 

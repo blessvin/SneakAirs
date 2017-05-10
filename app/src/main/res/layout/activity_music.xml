@@ -15,8 +15,6 @@
         android:layout_centerInParent="true"
         android:layout_gravity="center"
         android:src="@drawable/ic_action_play"
-        android:tint="@color/white"
-        android:tintMode="screen"
         android:background="@drawable/circular_background"/>
 
     <!--<SeekBar-->

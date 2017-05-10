@@ -2,6 +2,8 @@ package com.sneakairs.android.models;
 
 import android.location.Location;
 
+import com.parse.ParseGeoPoint;
+
 /**
  * Created by sumodkulkarni on 03/04/17.
  */
@@ -13,6 +15,10 @@ public class NavigationPoint {
     private String longitudeString;
     private String maneuver;
     private Location location;
+    private ParseGeoPoint startLocation, endLocation;
+
+    private boolean reached = false;
+    private int distance;
 
     public NavigationPoint() {
         this.location = new Location("navigation_point_location");
@@ -80,5 +86,37 @@ public class NavigationPoint {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public boolean isReached() {
+        return reached;
+    }
+
+    public void setReached(boolean reached) {
+        this.reached = reached;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public ParseGeoPoint getStartLocation() {
+        return startLocation;
+    }
+
+    public void setStartLocation(ParseGeoPoint startLocation) {
+        this.startLocation = startLocation;
+    }
+
+    public ParseGeoPoint getEndLocation() {
+        return endLocation;
+    }
+
+    public void setEndLocation(ParseGeoPoint endLocation) {
+        this.endLocation = endLocation;
     }
 }

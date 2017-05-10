@@ -1,6 +1,9 @@
 package com.sneakairs.android.activities;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.SensorManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -19,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -43,6 +47,7 @@ import com.sneakairs.android.R;
 import com.sneakairs.android.models.NavigationPoint;
 import com.sneakairs.android.services.NavigationService;
 import com.sneakairs.android.utils.CacheUtils;
+import com.sneakairs.android.utils.Constants;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
@@ -74,6 +79,10 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
     @ViewById(R.id.button_destination) ImageView buttonDestination;
     @ViewById(R.id.scrollView_views) ScrollView scrollView_views;
     @ViewById(R.id.button_start_navigation) ImageView buttonStartNavigation;
+    @ViewById(R.id.linearLayout_navigation) LinearLayout linearLayoutNavigation;
+
+    @ViewById(R.id.distance_covered) TextView distanceCoveredTextView;
+    @ViewById(R.id.check_points_covered) TextView checkPointsCoveredTextView;
 
     private SupportMapFragment supportMapFragment;
     private android.support.v4.app.FragmentManager supportFragmentManager;
@@ -85,6 +94,8 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
     boolean isOriginSelected = false, isDestinationSelected = false;
 
     Animation blinkAnimation;
+
+    BroadcastReceiver navigationReceiver;
 
     List<NavigationPoint> navigationPointList = new ArrayList<>();
 
@@ -157,7 +168,7 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
                 buttonOrigin.setBackground(getResources().getDrawable(R.drawable.circular_background_green));
                 isOriginSelected = true;
                 if (isDestinationSelected) {
-                    buttonStartNavigation.setVisibility(View.VISIBLE);
+                    linearLayoutNavigation.setVisibility(View.VISIBLE);
                 }
                 break;
 
@@ -166,7 +177,7 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
                 buttonDestination.setBackground(getResources().getDrawable(R.drawable.circular_background_green));
                 isDestinationSelected = true;
                 if (isOriginSelected) {
-                    buttonStartNavigation.setVisibility(View.VISIBLE);
+                    linearLayoutNavigation.setVisibility(View.VISIBLE);
                 }
                 break;
         }
@@ -206,6 +217,21 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (navigationReceiver == null) {
+            navigationReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    updateTextViews();
+                }
+            };
+            registerReceiver(navigationReceiver, new IntentFilter(Constants.NAVIGATION_UPDATE_INTENT_FILTER));
+        }
+    }
+
+    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -231,11 +257,21 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
         blinkAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.blink);
 
         if (App.isNavigationServiceRunning) {
-            buttonStartNavigation.setVisibility(View.VISIBLE);
+            linearLayoutNavigation.setVisibility(View.VISIBLE);
             buttonOrigin.setBackground(getResources().getDrawable(R.drawable.circular_background_green));
             buttonDestination.setBackground(getResources().getDrawable(R.drawable.circular_background_green));
             buttonStartNavigation.startAnimation(blinkAnimation);
+
+            updateTextViews();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (navigationReceiver != null)
+            unregisterReceiver(navigationReceiver);
     }
 
     private void getLocation() {
@@ -341,6 +377,9 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
                         navigationPoint.setLatitude(((JSONObject) steps.get(i)).getJSONObject("start_location").getDouble("lat"));
                         navigationPoint.setLongitude(((JSONObject) steps.get(i)).getJSONObject("start_location").getDouble("lng"));
                         navigationPoint.setManeuver(((JSONObject) steps.get(i)).getString("maneuver"));
+                        navigationPoint.setDistance(((JSONObject) steps.get(i)).getJSONObject("distance").getInt("value"));
+                        navigationPoint.setStartLocation(new ParseGeoPoint(((JSONObject) steps.get(i)).getJSONObject("start_location").getDouble("lat"), ((JSONObject) steps.get(i)).getJSONObject("start_location").getDouble("lng")));
+                        navigationPoint.setStartLocation(new ParseGeoPoint(((JSONObject) steps.get(i)).getJSONObject("end_location").getDouble("lat"), ((JSONObject) steps.get(i)).getJSONObject("end_location").getDouble("lng")));
                         App.navigationPointList.add(navigationPoint);
                     }
                 }
@@ -350,10 +389,22 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
                 intent.putExtra("navigationPointsList", gson.toJson(App.navigationPointList));
                 startService(intent);
                 buttonStartNavigation.startAnimation(blinkAnimation);
+                Toast.makeText(getApplicationContext(), "Navigation started", Toast.LENGTH_SHORT).show();
+                updateTextViews();
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private void updateTextViews() {
+        String distance = "";
+        if (App.distanceCovered >= 1000) distance = String.valueOf(App.distanceCovered/1000) + "km";
+        else distance = String.valueOf(App.distanceCovered) + " m";
+
+        distanceCoveredTextView.setText(distance + "\n" + "covered");
+        String text = String.valueOf(App.checkPointsCovered) + "\n checkpoint(s) reached";
+        checkPointsCoveredTextView.setText(text);
     }
 }
 

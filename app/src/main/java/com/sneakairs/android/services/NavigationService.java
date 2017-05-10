@@ -65,6 +65,8 @@ public class NavigationService extends Service {
 
         App.isNavigationServiceRunning = true;
 
+        // Reset distance covered
+        App.distanceCovered = 0; App.checkPointsCovered = 0;
         gson = new Gson();
         Log.d(TAG, "started");
 
@@ -85,6 +87,8 @@ public class NavigationService extends Service {
             sendBroadcast(intent);
             stopSelf();
         } else {
+            int reachedCount = 0;
+            int distanceCovered = 0;
             for (int i = 0; i < navigationPointList.size(); i++) {
                 NavigationPoint navigationPoint = navigationPointList.get(i);
 
@@ -94,6 +98,7 @@ public class NavigationService extends Service {
                 Log.d(TAG, "Distance = " + String.valueOf(distance));
 
                 if (distance < Constants.DEFAULT_NAVIGATION_RANGE) {
+                    navigationPoint.setReached(true);
                     String maneuver = navigationPoint.getManeuver();
                     if (maneuver.trim().equals("turn-left".trim())) {
 
@@ -108,7 +113,13 @@ public class NavigationService extends Service {
                         sendBroadcast(intent);
                     }
                 }
+                if (navigationPoint.isReached()){
+                    reachedCount++;
+                    distanceCovered += navigationPoint.getDistance();
+                }
             }
+            App.distanceCovered = distanceCovered;
+            App.checkPointsCovered = reachedCount;
         }
     }
 

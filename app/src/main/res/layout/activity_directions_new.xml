@@ -44,17 +44,64 @@
                 android:layout_gravity="center"
                 android:background="@color/black"/>
 
-            <ImageView
-                android:id="@+id/button_start_navigation"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_centerInParent="true"
-                android:padding="20dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_action_navigation"
-                android:tint="@color/white"
-                android:background="@drawable/circular_background"
-                android:visibility="gone"/>
+            <LinearLayout
+                android:id="@+id/linearLayout_navigation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/distance_covered"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:textAlignment="center"
+                        android:textColor="@color/material_green"/>
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/button_start_navigation"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_centerInParent="true"
+                    android:padding="20dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_action_navigation"
+                    android:tint="@color/white"
+                    android:background="@drawable/circular_background"
+                    android:visibility="visible"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/check_points_covered"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:textAlignment="center"
+                        android:textSize="14sp"
+                        android:textColor="@color/material_green"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
 
             <FrameLayout
                 android:layout_width="2dp"
