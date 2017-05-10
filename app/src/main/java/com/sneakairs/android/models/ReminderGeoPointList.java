@@ -6,5 +6,5 @@ import java.util.ArrayList;
  * Created by sumodkulkarni on 04/05/17.
  */
 
-public class ReminderGeoPointList extends ArrayList{
+public class ReminderGeoPointList extends ArrayList<ReminderGeoPoint> {
 }

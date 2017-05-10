@@ -16,6 +16,7 @@ import android.support.v4.widget.ListViewAutoScrollHelper;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.Manifest;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
@@ -25,10 +26,13 @@ import android.widget.TextView;
 import com.github.clans.fab.*;
 
 import com.google.gson.Gson;
+import com.sneakairs.android.App;
 import com.sneakairs.android.R;
 import com.sneakairs.android.activities.reminders.ReminderActivity_;
 import com.sneakairs.android.models.ReminderGeoPoint;
 import com.sneakairs.android.models.ReminderGeoPointList;
+import com.sneakairs.android.services.ReminderService;
+import com.sneakairs.android.services.ReminderService_;
 import com.sneakairs.android.utils.Constants;
 
 import org.androidannotations.annotations.AfterViews;
@@ -39,8 +43,12 @@ import org.androidannotations.annotations.ViewById;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.Realm;
+
 @EActivity(R.layout.activity_start)
 public class StartActivity extends AppCompatActivity {
+
+    private static final String TAG = "StartActivity";
 
     private static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 100;
     private static final int MY_PERMISSIONS_REQUEST_BLUETOOTH = 200;
@@ -52,25 +60,33 @@ public class StartActivity extends AppCompatActivity {
 
     BroadcastReceiver broadcastReceiver;
 
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
+    Realm realm;
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         if (broadcastReceiver == null) {
             broadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
+
+                    Log.d(TAG, "BroadCast received");
+
                     List<ReminderGeoPoint> buzzReminders = new Gson().fromJson(intent.getStringExtra("buzzReminders"), ReminderGeoPointList.class);
 
+                    Log.d(TAG, "buzzReminders.size() = " + String.valueOf(buzzReminders.size()));
                     if (buzzReminders.size() > 0) {
                         List<String> messages = new ArrayList<>();
-                        for (ReminderGeoPoint reminderGeoPoint : buzzReminders)
+                        for (ReminderGeoPoint reminderGeoPoint : buzzReminders) {
                             messages.add(reminderGeoPoint.getMessage());
+
+                            Log.d(TAG, "buzzReminders | " + reminderGeoPoint.getMessage());
+                        }
 
                         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
                                 context,
                                 android.R.layout.simple_list_item_1,
-                                messages );
+                                messages);
 
                         listView.setAdapter(arrayAdapter);
                         setEmptyView(false);
@@ -89,6 +105,11 @@ public class StartActivity extends AppCompatActivity {
         askPermissions();
 
         setEmptyView(true);
+
+        if (App.remindersList != null && App.remindersList.size() > 0) {
+//            Log.d(TAG, "remindersList Not Null | " + App.remindersList.get(0).getMessage());
+            startService(new Intent(this, ReminderService_.class));
+        }
     }
 
     @Override
@@ -97,6 +118,7 @@ public class StartActivity extends AppCompatActivity {
 
         if (broadcastReceiver != null)
             unregisterReceiver(broadcastReceiver);
+
     }
 
     private void setEmptyView(boolean isEmptyView) {

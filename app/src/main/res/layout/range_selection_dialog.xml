@@ -7,20 +7,27 @@
     android:layout_marginStart="10dp"
     android:layout_marginEnd="10dp">
 
-    <TextView
+    <EditText
+        android:id="@+id/reminder_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:text="Select Range of this reminder in metre"
-        android:textSize="18sp"
-        android:textColor="@color/black"/>
+        android:hint="What to remind you about?"
+        android:inputType="text"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="25dp" />
 
     <EditText
         android:id="@+id/range_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="number"/>
+        android:inputType="number"
+        android:hint="Enter range in metre"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="25dp" />
 
     <Button
         android:id="@+id/submit_reminder"

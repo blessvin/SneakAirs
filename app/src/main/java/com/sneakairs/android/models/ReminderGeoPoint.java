@@ -5,6 +5,9 @@ package com.sneakairs.android.models;
  */
 
 public class ReminderGeoPoint {
+
+    int id;
+
     Double latitude;
     Double longitude;
     int range;
@@ -12,12 +15,6 @@ public class ReminderGeoPoint {
     boolean isDeleted = false;
 
     public ReminderGeoPoint() {
-    }
-
-    public ReminderGeoPoint(Double latitude, Double longitude, int range) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.range = range;
     }
 
     public ReminderGeoPoint(Double latitude, Double longitude, int range, String message) {
@@ -65,5 +62,13 @@ public class ReminderGeoPoint {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

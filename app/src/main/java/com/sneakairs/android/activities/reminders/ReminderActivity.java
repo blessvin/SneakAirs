@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.preference.EditTextPreference;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -25,6 +26,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
+import com.sneakairs.android.App;
 import com.sneakairs.android.R;
 import com.sneakairs.android.models.ReminderGeoPoint;
 import com.sneakairs.android.models.ReminderGeoPointList;
@@ -41,6 +43,8 @@ import java.util.List;
 @EActivity(R.layout.activity_reminder)
 public class ReminderActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback, GoogleMap.OnCameraChangeListener {
 
+    private static final String TAG = "ReminderActivity";
+
     private SupportMapFragment supportMapFragment;
     private android.support.v4.app.FragmentManager supportFragmentManager;
     GoogleApiClient googleApiClient;
@@ -48,10 +52,13 @@ public class ReminderActivity extends AppCompatActivity implements GoogleApiClie
     Double latitude, longitude;
     Gson gson;
 
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         gson = new Gson();
+
         supportMapFragment = SupportMapFragment.newInstance();
         supportFragmentManager = getSupportFragmentManager();
         supportMapFragment.getMapAsync(this);
@@ -70,6 +77,11 @@ public class ReminderActivity extends AppCompatActivity implements GoogleApiClie
 
         googleApiClient = new GoogleApiClient.Builder(this, this, this).addApi(LocationServices.API).build();
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
@@ -153,17 +165,21 @@ public class ReminderActivity extends AppCompatActivity implements GoogleApiClie
         dialog.setContentView(R.layout.range_selection_dialog);
 
         final EditText range = (EditText) dialog.findViewById(R.id.range_edit_text);
+        final EditText message = (EditText) dialog.findViewById(R.id.reminder_message);
         Button submitButton = (Button) dialog.findViewById(R.id.submit_reminder);
 
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (CacheUtils.get(Constants.KEY_REMINDER_GEO_POINTS) != null) {
-                    List<ReminderGeoPoint> reminderGeoPoints = gson.fromJson(CacheUtils.get(Constants.KEY_REMINDER_GEO_POINTS), ReminderGeoPointList.class);
-                    reminderGeoPoints.add(new ReminderGeoPoint(latitude, longitude, Integer.valueOf(range.getText().toString())));
-
-                    CacheUtils.set(getApplicationContext(), Constants.KEY_REMINDER_GEO_POINTS, gson.toJson(reminderGeoPoints));
+                if (App.remindersList != null) {
+                    App.remindersList.add(new ReminderGeoPoint(latitude, longitude, Integer.valueOf(range.getText().toString()), message.getText().toString()));
+                    CacheUtils.set(getApplicationContext(), Constants.KEY_REMINDER_GEO_POINTS, gson.toJson(App.remindersList));
                     dialog.dismiss();
+                    finish();
+                } else {
+                    ReminderGeoPoint reminderGeoPoint = new ReminderGeoPoint(latitude, longitude, Integer.valueOf(range.getText().toString()), message.getText().toString());
+                    App.remindersList.add(reminderGeoPoint);
+                    CacheUtils.set(getApplicationContext(), Constants.KEY_REMINDER_GEO_POINTS, gson.toJson(App.remindersList));
                 }
             }
         });

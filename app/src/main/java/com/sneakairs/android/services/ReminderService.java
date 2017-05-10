@@ -9,14 +9,21 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.nfc.Tag;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.provider.Settings;
+import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
+import com.parse.ParseGeoPoint;
 import com.sneakairs.android.App;
 import com.sneakairs.android.models.ReminderGeoPoint;
 import com.sneakairs.android.models.ReminderGeoPointList;
@@ -24,65 +31,117 @@ import com.sneakairs.android.utils.CacheUtils;
 import com.sneakairs.android.utils.Constants;
 import com.sneakairs.android.utils.LocationUtils;
 
+import org.androidannotations.annotations.Background;
+import org.androidannotations.annotations.EService;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by sumodkulkarni on 09/05/17.
  */
-
+@EService
 public class ReminderService extends Service {
+
+    private static final String TAG = "ReminderService";
 
     LocationListener locationListener;
     LocationManager locationManager;
 
-    List<ReminderGeoPoint> remindersList = new ArrayList<>();
+    List<ReminderGeoPoint> remindersList;
     Gson gson;
 
-    @Override
-    public void onCreate() {
-        gson = new Gson();
-        remindersList = gson.fromJson(CacheUtils.get(Constants.KEY_REMINDER_GEO_POINTS), ReminderGeoPointList.class);
+    private Timer timer;
+    private TimerTask timerTask;
+    long oldTime = 0;
 
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
+    public void startTimer() {
+        //set a new Timer
+        timer = new Timer();
 
-                List<ReminderGeoPoint> buzzReminders = new ArrayList<>();
-                for (ReminderGeoPoint reminderGeoPoint : remindersList) {
-
-                    if (LocationUtils.calculateDistanceFromUser(new LatLng(location.getLatitude(), location.getLongitude())
-                            , reminderGeoPoint.getLatitude(), reminderGeoPoint.getLatitude()) <= reminderGeoPoint.getRange()) {
-                        buzzReminders.add(reminderGeoPoint);
-                    }
-
-                }
-                Intent intent = new Intent(Constants.REMINDER_UPDATE_INTENT_FILTER);
-                intent.putExtra("buzzReminders", gson.toJson(buzzReminders));
-                sendBroadcast(intent);
-            }
-
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String s) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+        //initialize the TimerTask's job
+        timerTask = new TimerTask() {
+            public void run() {
+                queryLocation();
             }
         };
 
-        locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        //noinspection MissingPermission
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 0, locationListener);
+        //schedule the timer, to wake up every 1 second
+        timer.schedule(timerTask, 1000, 1000); //
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+
+        gson = new Gson();
+        Log.d(TAG, "started");
+        // Create the Realm instance
+
+        remindersList = gson.fromJson(CacheUtils.get(Constants.KEY_REMINDER_GEO_POINTS), ReminderGeoPointList.class);
+
+        startTimer();
+
+        return START_STICKY;
+    }
+
+    protected void queryLocation() {
+        Log.d(TAG, "queryLocation called");
+        getLocation();
+
+        List<ReminderGeoPoint> buzzReminders = new ArrayList<>();
+        for (ReminderGeoPoint reminderGeoPoint : remindersList) {
+
+            ParseGeoPoint userGeoPoint = new ParseGeoPoint(App.userGeoPoint.latitude, App.userGeoPoint.longitude);
+            ParseGeoPoint otherGeoPoint = new ParseGeoPoint(reminderGeoPoint.getLatitude(), reminderGeoPoint.getLongitude());
+
+            double distance = userGeoPoint.distanceInKilometersTo(otherGeoPoint) * 1000;
+
+            Log.d(TAG, reminderGeoPoint.getMessage() + " | "
+                    + distance + " | "
+                    + reminderGeoPoint.getRange() + " | "
+                    + reminderGeoPoint.getLatitude() + "|" + reminderGeoPoint.getLongitude());
+
+            if (distance <= reminderGeoPoint.getRange()) {
+                buzzReminders.add(reminderGeoPoint);
+
+            }
+
+        }
+        Intent intent = new Intent(Constants.REMINDER_UPDATE_INTENT_FILTER);
+        intent.putExtra("buzzReminders", gson.toJson(buzzReminders));
+        sendBroadcast(intent);
+    }
+
+    private void getLocation() {
+        LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
+        Location location = getLastKnownLocation(service);
+
+        // TODO: Use the app's lat long..
+        if (location != null) {
+            App.userGeoPoint = new LatLng(location.getLatitude(), location.getLongitude());
+
+            Log.d(TAG, "Fetched Location = " + location.getLatitude() + " | " + location.getLongitude());
+        }
+    }
+    @SuppressWarnings("MissingPermission")
+    private Location getLastKnownLocation(LocationManager mLocationManager) {
+        mLocationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+        List<String> providers = mLocationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            Location l = mLocationManager.getLastKnownLocation(provider);
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                // Found best last known location: %s", l);
+                bestLocation = l;
+            }
+        }
+        return bestLocation;
     }
 
     @Override
