@@ -25,8 +25,6 @@ public class MusicActivity extends AppCompatActivity {
     private static final String TAG = "MusicActivity.java";
 
     @ViewById(R.id.button_play) ImageView playButton;
-    @ViewById(R.id.button_skip_next) ImageView buttonSkipNext;
-    @ViewById(R.id.button_skip_previous) ImageView buttonSkipPrevious;
 
     BroadcastReceiver musicBroadcastReceiver;
 
@@ -78,16 +76,6 @@ public class MusicActivity extends AppCompatActivity {
         if (isPlaying)
             playButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_pause));
         else playButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_play));
-    }
-
-    @Click(R.id.button_skip_previous)
-    protected void playNext() {
-
-    }
-
-    @Click(R.id.button_skip_next)
-    protected void playPrevious() {
-
     }
 
     @Override
