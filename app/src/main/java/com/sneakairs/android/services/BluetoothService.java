@@ -158,6 +158,7 @@ public class BluetoothService extends Service {
             unregisterReceiver(navigationReceiver);
 
         App.isBluetoothServiceRunning = false;
+        Log.d(TAG, "Service Closed");
     }
 
     @Nullable

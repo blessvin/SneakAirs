@@ -23,7 +23,7 @@
         app:pulse_repeat="1"
         app:pulse_color="@color/bluetooth_blue"
         app:pulse_startFromScratch="true"
-        app:pulse_interpolator="Linear"
+        app:pulse_interpolator="AccelerateDecelerate"
         android:background="@color/white">
 
         <ImageView

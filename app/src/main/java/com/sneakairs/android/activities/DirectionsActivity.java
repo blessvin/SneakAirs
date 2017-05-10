@@ -11,9 +11,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -51,7 +55,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-@EActivity(R.layout.activity_directions)
+import pl.bclogic.pulsator4droid.library.PulsatorLayout;
+
+@EActivity(R.layout.activity_directions_new)
 public class DirectionsActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback, GoogleMap.OnCameraChangeListener {
 
     private static final String TAG = "DirectionsActivity";
@@ -59,10 +65,15 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
     @ViewById(R.id.map_relativeLayout) RelativeLayout mapRelativeLayout;
     @ViewById(R.id.map_container) FrameLayout mapFrameLayout;
 
-    @ViewById(R.id.linearLayout_views) LinearLayout linearLayoutViews;
+//    @ViewById(R.id.linearLayout_views) LinearLayout linearLayoutViews;
     @ViewById(R.id.text_view_origin) TextView originView;
     @ViewById(R.id.text_view_destination) TextView destinationView;
     @ViewById(R.id.directions_response) TextView directionsResponse;
+
+    @ViewById(R.id.button_origin) ImageView buttonOrigin;
+    @ViewById(R.id.button_destination) ImageView buttonDestination;
+    @ViewById(R.id.scrollView_views) ScrollView scrollView_views;
+    @ViewById(R.id.button_start_navigation) ImageView buttonStartNavigation;
 
     private SupportMapFragment supportMapFragment;
     private android.support.v4.app.FragmentManager supportFragmentManager;
@@ -71,6 +82,9 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
     LocationManager locationManager;
     Double latitude, longitude;
     LatLng origin, destination;
+    boolean isOriginSelected = false, isDestinationSelected = false;
+
+    Animation blinkAnimation;
 
     List<NavigationPoint> navigationPointList = new ArrayList<>();
 
@@ -83,14 +97,16 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
 
     @Click(R.id.button_origin)
     protected void buttonOriginClicked() {
-        linearLayoutViews.setVisibility(View.GONE);
+//        linearLayoutViews.setVisibility(View.GONE);
+        scrollView_views.setVisibility(View.GONE);
         mapRelativeLayout.setVisibility(View.VISIBLE);
         typeOfLocation = 0;
     }
 
     @Click(R.id.button_destination)
     protected void buttonDestinationClicked() {
-        linearLayoutViews.setVisibility(View.GONE);
+//        linearLayoutViews.setVisibility(View.GONE);
+        scrollView_views.setVisibility(View.GONE);
         mapRelativeLayout.setVisibility(View.VISIBLE);
         typeOfLocation = 1;
     }
@@ -106,9 +122,10 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
                 "&destination=" +
                 String.valueOf(destination.latitude) + "," + String.valueOf(destination.longitude) +
 
+                "&mode=walking" +
                 "&key=AIzaSyDiIoahHwikVAVHaPsrH5U8PdsgJMKVL_Y";
 
-// Request a string response from the provided URL.
+        // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -125,24 +142,32 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
                 directionsResponse.setText("That didn't work!");
             }
         });
-// Add the request to the RequestQueue.
+        // Add the request to the RequestQueue.
         queue.add(stringRequest);
     }
 
     @Click(R.id.submit_button)
     void submitButtonClick() {
         mapRelativeLayout.setVisibility(View.GONE);
-        linearLayoutViews.setVisibility(View.VISIBLE);
+        scrollView_views.setVisibility(View.VISIBLE);
 
         switch (typeOfLocation) {
             case 0:
-                originView.setText(latitude.toString() + ", " + longitude.toString());
                 origin = new LatLng(latitude, longitude);
+                buttonOrigin.setBackground(getResources().getDrawable(R.drawable.circular_background_green));
+                isOriginSelected = true;
+                if (isDestinationSelected) {
+                    buttonStartNavigation.setVisibility(View.VISIBLE);
+                }
                 break;
 
             case 1:
-                destinationView.setText(latitude.toString() + ", " + longitude.toString());
                 destination = new LatLng(latitude, longitude);
+                buttonDestination.setBackground(getResources().getDrawable(R.drawable.circular_background_green));
+                isDestinationSelected = true;
+                if (isOriginSelected) {
+                    buttonStartNavigation.setVisibility(View.VISIBLE);
+                }
                 break;
         }
     }
@@ -203,6 +228,14 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
         googleApiClient = new GoogleApiClient.Builder(this, this, this).addApi(LocationServices.API).build();
         gson = new Gson();
 
+        blinkAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.blink);
+
+        if (App.isNavigationServiceRunning) {
+            buttonStartNavigation.setVisibility(View.VISIBLE);
+            buttonOrigin.setBackground(getResources().getDrawable(R.drawable.circular_background_green));
+            buttonDestination.setBackground(getResources().getDrawable(R.drawable.circular_background_green));
+            buttonStartNavigation.startAnimation(blinkAnimation);
+        }
     }
 
     private void getLocation() {
@@ -316,6 +349,7 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
                 Intent intent = new Intent(getApplicationContext(), NavigationService.class);
                 intent.putExtra("navigationPointsList", gson.toJson(App.navigationPointList));
                 startService(intent);
+                buttonStartNavigation.startAnimation(blinkAnimation);
             }
         } catch (JSONException e) {
             e.printStackTrace();

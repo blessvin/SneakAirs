@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
                     startActivity(intent);
                     finish();
                 }
-            }, 3000);
+            }, 1000);
         }
     }
 
