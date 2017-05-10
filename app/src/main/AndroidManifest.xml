@@ -15,17 +15,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".activities.MainActivity_">
-
-        </activity>
-        <activity android:name=".activities.ConnectionActivity_" />
-        <activity android:name=".activities.DirectionsActivity_"></activity>
-
-        <activity android:name=".activities.StartActivity_">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".activities.ConnectionActivity_" />
+        <activity android:name=".activities.DirectionsActivity_"></activity>
+
+        <activity android:name=".activities.StartActivity_">
         </activity>
         <activity android:name=".activities.reminders.ReminderActivity_" />
         <activity android:name=".activities.reminders.ViewRemindersActivity_"></activity>
@@ -35,6 +34,7 @@
             android:value="@string/google_maps_key" />
 
         <!-- Services -->
+        <service android:name=".services.BluetoothService"/>
         <service android:name=".services.NavigationService"/>
         <service android:name=".services.ReminderService_"/>
 

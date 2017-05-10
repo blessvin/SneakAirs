@@ -305,6 +305,7 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
                         App.navigationPointList.add(navigationPoint);
                     }
                 }
+                App.navigationPoints = App.navigationPointList;
                 CacheUtils.set(getApplicationContext(), "navigationPoints", gson.toJson(App.navigationPointList));
 
                 Intent intent = new Intent(getApplicationContext(), MainActivity_.class);

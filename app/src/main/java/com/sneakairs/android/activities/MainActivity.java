@@ -5,7 +5,9 @@ import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,7 +17,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.sneakairs.android.App;
 import com.sneakairs.android.R;
+import com.sneakairs.android.services.BluetoothService;
+import com.sneakairs.android.services.ReminderService;
+import com.sneakairs.android.services.ReminderService_;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
@@ -35,8 +41,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String EXTRA_ADDRESS = "address";
 
-    @ViewById(R.id.button_one) Button buttonOne;
-    @ViewById(R.id.button_two) Button buttonTwo;
     @ViewById(R.id.button_search) Button buttonSearch;
 
     @ViewById(R.id.lisView) ListView listView;
@@ -46,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private SmoothBluetooth mSmoothBluetooth;
     ArrayAdapter<String> listAdapter;
 
+    BroadcastReceiver mReceiver;
     BluetoothAdapter bluetoothAdapter = null;
     Set pairedDevices;
 
@@ -55,6 +60,34 @@ public class MainActivity extends AppCompatActivity {
         pairedDevicesList();
 
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (mReceiver == null) {
+            mReceiver = new BroadcastReceiver() {
+                public void onReceive(Context context, Intent intent) {
+                    String action = intent.getAction();
+
+                    if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
+                        //discovery starts, we can show progress dialog or perform other tasks
+
+                    } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                        //discovery finishes, dismis progress dialog
+
+                    } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                        //bluetooth device found
+
+                        BluetoothDevice device = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                        Toast.makeText(context, "Found device " + device.getName(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            };
+
+            registerReceiver(mReceiver, new IntentFilter());
+        }
     }
 
     @AfterViews
@@ -73,28 +106,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-
-            if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
-                //discovery starts, we can show progress dialog or perform other tasks
-
-            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                //discovery finishes, dismis progress dialog
-
-            } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                //bluetooth device found
-
-                BluetoothDevice device = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                Toast.makeText(context, "Found device " + device.getName(), Toast.LENGTH_LONG).show();
-            }
-        }
-    };
+//    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+//        public void onReceive(Context context, Intent intent) {
+//            String action = intent.getAction();
+//
+//            if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
+//                //discovery starts, we can show progress dialog or perform other tasks
+//
+//            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+//                //discovery finishes, dismis progress dialog
+//
+//            } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+//                //bluetooth device found
+//
+//                BluetoothDevice device = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+//                Toast.makeText(context, "Found device " + device.getName(), Toast.LENGTH_LONG).show();
+//            }
+//        }
+//    };
 
     @Override
     public void onDestroy() {
-         unregisterReceiver(mReceiver);
+        if (mReceiver != null)
+            unregisterReceiver(mReceiver);
 
         super.onDestroy();
     }
@@ -122,15 +156,18 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                // Get the device MAC address, the last 17 chars in the View
                 String info = ((TextView) view).getText().toString();
                 String address = info.substring(info.length() - 17);
-                // Make an intent to start next activity.
-                Intent intent = new Intent(context, ConnectionActivity_.class);
-                //Change the activity.
-                intent.putExtra(EXTRA_ADDRESS, address); //this will be received at ledControl (class) Activity
+                Intent intent = new Intent(context, StartActivity_.class);
+
+                App.deviceMACAddress = address;
+                Log.d(TAG, "BT Address = " + address);
+
+                intent.putExtra(EXTRA_ADDRESS, address);
                 if (getIntent().hasExtra("navigationPointsList"))
                     intent.putExtra("navigationPointsList", getIntent().getStringExtra("navigationPointsList"));
+
+
                 startActivity(intent);
             }
         }); //Method called when the device from the list is clicked

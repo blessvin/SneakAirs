@@ -31,6 +31,7 @@ import com.sneakairs.android.R;
 import com.sneakairs.android.activities.reminders.ReminderActivity_;
 import com.sneakairs.android.models.ReminderGeoPoint;
 import com.sneakairs.android.models.ReminderGeoPointList;
+import com.sneakairs.android.services.BluetoothService;
 import com.sneakairs.android.services.ReminderService;
 import com.sneakairs.android.services.ReminderService_;
 import com.sneakairs.android.utils.Constants;
@@ -110,6 +111,8 @@ public class StartActivity extends AppCompatActivity {
 //            Log.d(TAG, "remindersList Not Null | " + App.remindersList.get(0).getMessage());
             startService(new Intent(this, ReminderService_.class));
         }
+
+        startService(new Intent(this, BluetoothService.class));
     }
 
     @Override
