@@ -32,10 +32,12 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
+import com.parse.ParseGeoPoint;
 import com.sneakairs.android.App;
 
 import com.sneakairs.android.R;
 import com.sneakairs.android.models.NavigationPoint;
+import com.sneakairs.android.services.NavigationService;
 import com.sneakairs.android.utils.CacheUtils;
 
 import org.androidannotations.annotations.AfterViews;
@@ -286,7 +288,10 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
     }
 
     private void parseDirections(String response) {
-        SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
+        App.navigationStartPoint = new ParseGeoPoint(origin.latitude, origin.longitude);
+        App.navigationEndPoint = new ParseGeoPoint(destination.latitude, destination.longitude);
+
         try {
             JSONObject jsonResponse = new JSONObject(response);
             if (jsonResponse.getString("status").trim().equals("OK".trim())) {
@@ -294,6 +299,7 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
                 JSONArray legs  = routes.getJSONObject(0).getJSONArray("legs");
                 steps = legs.getJSONObject(0).getJSONArray("steps");
 
+                App.navigationPointList.clear();
                 for (int i = 0; i < steps.length(); i++) {
 
                     if (((JSONObject) steps.get(i)).has("maneuver")) {
@@ -305,12 +311,11 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
                         App.navigationPointList.add(navigationPoint);
                     }
                 }
-                App.navigationPoints = App.navigationPointList;
                 CacheUtils.set(getApplicationContext(), "navigationPoints", gson.toJson(App.navigationPointList));
 
-                Intent intent = new Intent(getApplicationContext(), MainActivity_.class);
+                Intent intent = new Intent(getApplicationContext(), NavigationService.class);
                 intent.putExtra("navigationPointsList", gson.toJson(App.navigationPointList));
-                startActivity(intent);
+                startService(intent);
             }
         } catch (JSONException e) {
             e.printStackTrace();

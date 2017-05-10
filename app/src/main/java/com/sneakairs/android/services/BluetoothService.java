@@ -50,6 +50,7 @@ public class BluetoothService extends Service {
     final int handlerState = 0;
 
     BroadcastReceiver reminderBroadcastReceiver;
+    BroadcastReceiver navigationReceiver;
 
     @Override
     public void onCreate() {
@@ -120,7 +121,7 @@ public class BluetoothService extends Service {
 
                     if (buzzReminders.size() > 0) {
                         connectedThread.write(Constants.MESSAGE_EVENT_REMINGER);
-                        Log.d(TAG, "Sent \'z\' to bluetooth client");
+                        Log.d(TAG, "Sent " + Constants.MESSAGE_EVENT_REMINGER + " to bluetooth client");
 
 //                        musicIntent.putExtra(Constants.shouldPlayMusic, true);
                     } else{
@@ -131,8 +132,17 @@ public class BluetoothService extends Service {
                 }
             };
         }
-
         registerReceiver(reminderBroadcastReceiver, new IntentFilter(Constants.REMINDER_UPDATE_INTENT_FILTER));
+
+        if (navigationReceiver == null) {
+            navigationReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    connectedThread.write(intent.getStringExtra(Constants.bluetooth_send_message));
+                }
+            };
+        }
+        registerReceiver(navigationReceiver, new IntentFilter(Constants.NAVIGATION_UPDATE_INTENT_FILTER));
 
         return START_STICKY;
     }
@@ -140,7 +150,12 @@ public class BluetoothService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(reminderBroadcastReceiver);
+
+        if (reminderBroadcastReceiver != null)
+            unregisterReceiver(reminderBroadcastReceiver);
+
+        if (navigationReceiver != null)
+            unregisterReceiver(navigationReceiver);
 
         App.isBluetoothServiceRunning = false;
     }

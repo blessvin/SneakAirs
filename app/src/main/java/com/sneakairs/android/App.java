@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
+import com.parse.ParseGeoPoint;
 import com.sneakairs.android.models.NavigationPoint;
 import com.sneakairs.android.models.NavigationPointLIst;
 import com.sneakairs.android.models.ReminderGeoPoint;
@@ -35,6 +36,11 @@ public class App extends Application {
     public static boolean isBluetoothServiceRunning = false;
     public static boolean isMusicServiceRunning = false;
     public static boolean isReminderServiceRunning = false;
+    public static boolean isNavigationServiceRunning = false;
+
+    public static ParseGeoPoint navigationStartPoint;
+    public static ParseGeoPoint navigationEndPoint;
+
 
 
     @Override
