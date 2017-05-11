@@ -1,11 +1,15 @@
 package com.sneakairs.android.models;
 
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
 /**
  * Created by sumodkulkarni on 04/05/17.
  */
 
-public class ReminderGeoPoint {
+public class ReminderGeoPoint extends RealmObject {
 
+    @PrimaryKey
     int id;
 
     Double latitude;

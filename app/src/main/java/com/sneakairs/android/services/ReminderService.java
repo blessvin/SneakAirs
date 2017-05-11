@@ -3,8 +3,10 @@ package com.sneakairs.android.services;
 import android.Manifest;
 import android.app.RemoteInput;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -39,10 +41,13 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import io.realm.Realm;
+import io.realm.RealmResults;
+
 /**
  * Created by sumodkulkarni on 09/05/17.
  */
-@EService
+
 public class ReminderService extends Service {
 
     private static final String TAG = "ReminderService";
@@ -52,6 +57,11 @@ public class ReminderService extends Service {
 
     List<ReminderGeoPoint> remindersList;
     Gson gson;
+
+    BroadcastReceiver remindersListUpdateReceiver;
+
+    int counter = 0; // A bluetooth message is sent only when this value reaches 10.
+                     // Else user will keep getting vibrations
 
     private Timer timer;
     private TimerTask timerTask;
@@ -68,8 +78,8 @@ public class ReminderService extends Service {
             }
         };
 
-        //schedule the timer, to wake up every 1 second
-        timer.schedule(timerTask, 1000, 10000); //
+        //schedule the timer, to wake up every 10 seconds
+        timer.schedule(timerTask, 1000, 1000); //
     }
 
     @Override
@@ -80,11 +90,20 @@ public class ReminderService extends Service {
 
         gson = new Gson();
         Log.d(TAG, "started");
-        // Create the Realm instance
 
-        remindersList = gson.fromJson(CacheUtils.get(Constants.KEY_REMINDER_GEO_POINTS), ReminderGeoPointList.class);
+        remindersList = App.remindersList;
 
         startTimer();
+
+        if (remindersListUpdateReceiver == null) {
+            remindersListUpdateReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    remindersList = App.remindersList;
+                }
+            };
+            registerReceiver(remindersListUpdateReceiver, new IntentFilter(Constants.REMINDERS_LIST_UPDATED_INTENT_FILTER));
+        }
 
         return START_STICKY;
     }
@@ -93,7 +112,7 @@ public class ReminderService extends Service {
         Log.d(TAG, "queryLocation called");
         getLocation();
 
-        List<ReminderGeoPoint> buzzReminders = new ArrayList<>();
+        App.buzzRemindersList.clear();
         for (ReminderGeoPoint reminderGeoPoint : remindersList) {
 
             ParseGeoPoint userGeoPoint = new ParseGeoPoint(App.userGeoPoint.latitude, App.userGeoPoint.longitude);
@@ -107,14 +126,21 @@ public class ReminderService extends Service {
                     + reminderGeoPoint.getLatitude() + "|" + reminderGeoPoint.getLongitude());
 
             if (distance <= reminderGeoPoint.getRange()) {
-                buzzReminders.add(reminderGeoPoint);
-
+                App.buzzRemindersList.add(reminderGeoPoint);
             }
 
         }
-        Intent intent = new Intent(Constants.REMINDER_UPDATE_INTENT_FILTER);
-        intent.putExtra("buzzReminders", gson.toJson(buzzReminders));
-        sendBroadcast(intent);
+
+        Intent intentNew = new Intent(Constants.REMINDERS_LIST_UPDATED_INTENT_FILTER);
+        sendBroadcast(intentNew);
+
+        Log.d(TAG, "buzzReminderCount = " + App.buzzRemindersList.size());
+        if (App.buzzRemindersList.size() > 0 && counter < 10) {
+            counter++;
+            Intent intent = new Intent(Constants.REMINDER_UPDATE_INTENT_FILTER);
+            intent.putExtra("buzzReminders", gson.toJson(App.buzzRemindersList));
+            sendBroadcast(intent);
+        }
     }
 
     private void getLocation() {

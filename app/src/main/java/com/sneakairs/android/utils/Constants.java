@@ -37,4 +37,6 @@ public class Constants {
     //Default range for navigation point alert in metre
     public static final int DEFAULT_NAVIGATION_RANGE = 15;
 
+    public static final String REMINDERS_LIST_UPDATED_INTENT_FILTER = "reminders-list-updated";
+
 }

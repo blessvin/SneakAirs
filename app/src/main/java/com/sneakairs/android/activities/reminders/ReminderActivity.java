@@ -1,6 +1,7 @@
 package com.sneakairs.android.activities.reminders;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -30,6 +31,7 @@ import com.sneakairs.android.App;
 import com.sneakairs.android.R;
 import com.sneakairs.android.models.ReminderGeoPoint;
 import com.sneakairs.android.models.ReminderGeoPointList;
+import com.sneakairs.android.services.ReminderService;
 import com.sneakairs.android.utils.CacheUtils;
 import com.sneakairs.android.utils.Constants;
 
@@ -39,6 +41,9 @@ import org.androidannotations.annotations.EActivity;
 
 import java.security.Permission;
 import java.util.List;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 @EActivity(R.layout.activity_reminder)
 public class ReminderActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback, GoogleMap.OnCameraChangeListener {
@@ -52,6 +57,7 @@ public class ReminderActivity extends AppCompatActivity implements GoogleApiClie
     Double latitude, longitude;
     Gson gson;
 
+    private Realm realm;
 
 
     @Override
@@ -77,6 +83,7 @@ public class ReminderActivity extends AppCompatActivity implements GoogleApiClie
 
         googleApiClient = new GoogleApiClient.Builder(this, this, this).addApi(LocationServices.API).build();
 
+        realm = Realm.getDefaultInstance();
     }
 
     @Override
@@ -171,16 +178,42 @@ public class ReminderActivity extends AppCompatActivity implements GoogleApiClie
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (App.remindersList != null) {
-                    App.remindersList.add(new ReminderGeoPoint(latitude, longitude, Integer.valueOf(range.getText().toString()), message.getText().toString()));
-                    CacheUtils.set(getApplicationContext(), Constants.KEY_REMINDER_GEO_POINTS, gson.toJson(App.remindersList));
-                    dialog.dismiss();
-                    finish();
-                } else {
-                    ReminderGeoPoint reminderGeoPoint = new ReminderGeoPoint(latitude, longitude, Integer.valueOf(range.getText().toString()), message.getText().toString());
-                    App.remindersList.add(reminderGeoPoint);
-                    CacheUtils.set(getApplicationContext(), Constants.KEY_REMINDER_GEO_POINTS, gson.toJson(App.remindersList));
+
+                if (message.getText().toString().equals("".trim())) {
+                    Toast.makeText(getApplicationContext(), "Enter a message", Toast.LENGTH_SHORT).show();
+                    return;
                 }
+
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+
+                        ReminderGeoPoint test = realm.where(ReminderGeoPoint.class).equalTo("id", 0).findFirst();
+
+                        if (test != null) {
+                            int nextID = realm.where(ReminderGeoPoint.class).max("id").intValue() + 1;
+                            ReminderGeoPoint reminderGeoPoint = realm.createObject(ReminderGeoPoint.class, nextID);
+                            reminderGeoPoint.setLatitude(latitude);
+                            reminderGeoPoint.setLongitude(longitude);
+                            reminderGeoPoint.setRange(Integer.valueOf(range.getText().toString()));
+                            reminderGeoPoint.setMessage(message.getText().toString());
+                        } else {
+                            ReminderGeoPoint reminderGeoPoint = realm.createObject(ReminderGeoPoint.class, 0);
+                            reminderGeoPoint.setLatitude(latitude);
+                            reminderGeoPoint.setLongitude(longitude);
+                            reminderGeoPoint.setRange(Integer.valueOf(range.getText().toString()));
+                            reminderGeoPoint.setMessage(message.getText().toString());
+
+                            startService(new Intent(getApplicationContext(), ReminderService.class));
+                        }
+
+                        App.updateRemindersList();
+                        sendBroadcast(new Intent());
+                    }
+                });
+                Toast.makeText(getApplicationContext(), "Reminder saved", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+                finish();
             }
         });
 

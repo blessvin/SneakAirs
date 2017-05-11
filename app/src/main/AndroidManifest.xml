@@ -34,7 +34,7 @@
         <!-- Services -->
         <service android:name=".services.BluetoothService" />
         <service android:name=".services.NavigationService" />
-        <service android:name=".services.ReminderService_" />
+        <service android:name=".services.ReminderService" />
         <service android:name=".services.MusicService" />
 
         <activity android:name=".activities.MusicActivity_"></activity>

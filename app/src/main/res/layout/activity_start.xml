@@ -36,8 +36,8 @@
                 android:textStyle="bold"
                 android:textColor="@color/black"/>
 
-            <ListView
-                android:id="@+id/reminders_list_view"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/reminders_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 

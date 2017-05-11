@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
     @AfterViews
     protected void afterViews() {
 
+        skipBullshit();
+
         // load animations
         animFadeIn = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
         animFadeOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
@@ -80,6 +82,17 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
             Intent turnBTon = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(turnBTon,1);
         }
+    }
+
+    private void skipBullshit() {
+        Intent intent = new Intent(MainActivity.this, StartActivity_.class);
+        intent.putExtra(EXTRA_ADDRESS, App.deviceMACAddress);
+        if (getIntent().hasExtra("navigationPointsList"))
+            intent.putExtra("navigationPointsList", getIntent().getStringExtra("navigationPointsList"));
+
+        startActivity(intent);
+        finish();
+        return;
     }
 
     @Override

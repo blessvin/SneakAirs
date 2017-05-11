@@ -16,6 +16,8 @@ import android.support.v4.widget.ListViewAutoScrollHelper;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.Manifest;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -29,12 +31,12 @@ import com.google.gson.Gson;
 import com.sneakairs.android.App;
 import com.sneakairs.android.R;
 import com.sneakairs.android.activities.reminders.ReminderActivity_;
+import com.sneakairs.android.adaptors.RemindersListAdaptor;
 import com.sneakairs.android.models.ReminderGeoPoint;
 import com.sneakairs.android.models.ReminderGeoPointList;
 import com.sneakairs.android.services.BluetoothService;
 import com.sneakairs.android.services.MusicService;
 import com.sneakairs.android.services.ReminderService;
-import com.sneakairs.android.services.ReminderService_;
 import com.sneakairs.android.utils.Constants;
 
 import org.androidannotations.annotations.AfterViews;
@@ -56,11 +58,14 @@ public class StartActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_BLUETOOTH = 200;
 
     @ViewById(R.id.fab_menu) FloatingActionMenu fabMenu;
-    @ViewById(R.id.reminders_list_view) ListView listView;
+    @ViewById(R.id.reminders_recycler_view) RecyclerView recyclerView;
     @ViewById(R.id.linearLayout_start) LinearLayout linearLayout;
     @ViewById(R.id.empty_reminders_message) TextView emptyMessage;
 
     BroadcastReceiver broadcastReceiver;
+    BroadcastReceiver reminderBroadcastReceiver;
+
+    RemindersListAdaptor adaptor;
 
     Realm realm;
 
@@ -72,7 +77,7 @@ public class StartActivity extends AppCompatActivity {
                 @Override
                 public void onReceive(Context context, Intent intent) {
 
-                    Log.d(TAG, "BroadCast received");
+                    Log.d(TAG, "BroadCast received " + Constants.REMINDER_UPDATE_INTENT_FILTER);
 
                     List<ReminderGeoPoint> buzzReminders = new Gson().fromJson(intent.getStringExtra("buzzReminders"), ReminderGeoPointList.class);
 
@@ -85,20 +90,34 @@ public class StartActivity extends AppCompatActivity {
                             Log.d(TAG, "buzzReminders | " + reminderGeoPoint.getMessage());
                         }
 
-                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                                context,
-                                android.R.layout.simple_list_item_1,
-                                messages);
-
-                        listView.setAdapter(arrayAdapter);
+                        adaptor = new RemindersListAdaptor(buzzReminders, context);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
+                        recyclerView.setAdapter(adaptor);
                         setEmptyView(false);
                     } else {
                         setEmptyView(true);
                     }
                 }
             };
-
             registerReceiver(broadcastReceiver, new IntentFilter(Constants.REMINDER_UPDATE_INTENT_FILTER));
+        }
+
+        if (reminderBroadcastReceiver == null) {
+            reminderBroadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    Log.d(TAG, "BroadCast received " + Constants.REMINDERS_LIST_UPDATED_INTENT_FILTER);
+
+                    if (adaptor != null) {
+                        adaptor.setList(App.buzzRemindersList);
+                        adaptor.notifyDataSetChanged();
+
+                        if (App.buzzRemindersList.size() > 0) setEmptyView(false);
+                        else setEmptyView(true);
+                    }
+                }
+            };
+            registerReceiver(reminderBroadcastReceiver, new IntentFilter(Constants.REMINDERS_LIST_UPDATED_INTENT_FILTER));
         }
     }
 
@@ -106,10 +125,15 @@ public class StartActivity extends AppCompatActivity {
     protected void afterViews() {
         askPermissions();
 
-        setEmptyView(true);
+        if (App.buzzRemindersList.size() > 0) {
+            adaptor = new RemindersListAdaptor(App.buzzRemindersList, this);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+            recyclerView.setAdapter(adaptor);
+            setEmptyView(false);
+        }
 
         if (!App.isReminderServiceRunning && App.remindersList != null && App.remindersList.size() > 0) {
-            startService(new Intent(this, ReminderService_.class));
+            startService(new Intent(this, ReminderService.class));
         }
 
         if (!App.isBluetoothServiceRunning)
@@ -125,6 +149,9 @@ public class StartActivity extends AppCompatActivity {
 
         if (broadcastReceiver != null)
             unregisterReceiver(broadcastReceiver);
+
+        if (reminderBroadcastReceiver != null)
+            unregisterReceiver(reminderBroadcastReceiver);
 
     }
 
