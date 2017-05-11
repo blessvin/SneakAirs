@@ -29,9 +29,9 @@ public class App extends Application {
     public static LatLng userGeoPoint;
     public static List<ReminderGeoPoint> remindersList = new ArrayList<>();
     public static List<NavigationPoint> navigationPoints = new ArrayList<>();
-    public static String deviceMACAddress = "98:D3:31:20:05:CC";
+    public static String deviceMACAddress = "98:D3:31:FB:04:8A";
     public static boolean shouldPlayMusic = false;
-    public static boolean overRideMusicPlayback = false;
+//    public static boolean overRideMusicPlayback = false;
 
     public static boolean isBluetoothServiceRunning = false;
     public static boolean isMusicServiceRunning = false;
@@ -42,6 +42,9 @@ public class App extends Application {
     public static ParseGeoPoint navigationEndPoint;
     public static int distanceCovered = 0;
     public static int checkPointsCovered = 0;
+
+    public static boolean isMusicPlaying = false;
+    public static boolean wirelessControl = false;
 
 
 

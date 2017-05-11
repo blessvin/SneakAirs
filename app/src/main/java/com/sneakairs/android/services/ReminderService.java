@@ -69,7 +69,7 @@ public class ReminderService extends Service {
         };
 
         //schedule the timer, to wake up every 1 second
-        timer.schedule(timerTask, 1000, 1000); //
+        timer.schedule(timerTask, 1000, 10000); //
     }
 
     @Override

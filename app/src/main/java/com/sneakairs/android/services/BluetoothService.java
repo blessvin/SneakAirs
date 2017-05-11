@@ -73,7 +73,9 @@ public class BluetoothService extends Service {
                 if (msg.what == handlerState) {
                     String readMessage = (String) msg.obj;
 
-                    // This is where you receive messages from Bluetooth Client
+                    Intent musicIntent = new Intent(Constants.MUSIC_UPDATE_INTENT_FILTER);
+                    musicIntent.putExtra("bluetooth-service", "message");
+                    sendBroadcast(musicIntent);
 
                     Log.d(TAG, "Received in Handler = " + readMessage);
                 }
@@ -109,7 +111,7 @@ public class BluetoothService extends Service {
 
         //I send a character when resuming.beginning transmission to check device is connected
         //If it is not an exception will be thrown in the write method and finish() will be called
-        connectedThread.write("z");
+//        connectedThread.write("z");
 
         if (reminderBroadcastReceiver == null) {
             reminderBroadcastReceiver = new BroadcastReceiver() {
@@ -144,7 +146,7 @@ public class BluetoothService extends Service {
         }
         registerReceiver(navigationReceiver, new IntentFilter(Constants.NAVIGATION_UPDATE_INTENT_FILTER));
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override

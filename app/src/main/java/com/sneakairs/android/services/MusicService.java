@@ -9,6 +9,7 @@ import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
+import android.text.LoginFilter;
 import android.util.Log;
 
 import com.sneakairs.android.App;
@@ -44,30 +45,14 @@ public class MusicService extends Service {
                 @Override
                 public void onReceive(Context context, Intent intent) {
 
-                    Log.d(TAG, "override = " + App.overRideMusicPlayback);
+                    Log.d(TAG, "isMediaPlayer playing at the beginning = " + mediaPlayer.isPlaying());
 
-                    if (App.overRideMusicPlayback && intent.hasExtra(Constants.shouldPlayMusic)) {
+                    if (intent.hasExtra("bluetooth-service")) {
+                        if (App.wirelessControl) toggleMusic();
+                        else return;
+                    } else toggleMusic();
 
-                        shouldPlayMusic = intent.getBooleanExtra(Constants.shouldPlayMusic, false);
-
-                        if (shouldPlayMusic && !mediaPlayer.isPlaying()) {
-                            mediaPlayer.start();
-                            mediaPlayer.setLooping(true);
-                        }
-                        else if (!shouldPlayMusic && mediaPlayer.isPlaying()) {
-                            mediaPlayer.pause();
-                        }
-
-                    } else if (App.overRideMusicPlayback && !mediaPlayer.isPlaying()){
-                        mediaPlayer.start();
-                        mediaPlayer.isLooping();
-                    }
-                    else {
-                        if (mediaPlayer.isPlaying()) {
-                            mediaPlayer.pause();
-                        }
-                    }
-
+                    Log.d(TAG, "isMediaPlayer playing at the end = " + mediaPlayer.isPlaying());
                 }
             };
         }
@@ -75,6 +60,17 @@ public class MusicService extends Service {
         registerReceiver(musicBroadcastReceiver, new IntentFilter(Constants.MUSIC_UPDATE_INTENT_FILTER));
 
         return START_NOT_STICKY;
+    }
+
+    private void toggleMusic() {
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+            App.isMusicPlaying = false;
+        } else {
+            mediaPlayer.start();
+            mediaPlayer.isLooping();
+            App.isMusicPlaying = true;
+        }
     }
 
     @Override

@@ -7,6 +7,8 @@ import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 
 import com.sneakairs.android.App;
@@ -25,20 +27,20 @@ public class MusicActivity extends AppCompatActivity {
     private static final String TAG = "MusicActivity.java";
 
     @ViewById(R.id.button_play) ImageView playButton;
+    @ViewById(R.id.overRide_switch) CheckBox wirelessControl;
 
     BroadcastReceiver musicBroadcastReceiver;
 
     @AfterViews
     protected void afterViews() {
-        Log.d(TAG, "isMusicServiceRunning = " + App.isMusicServiceRunning);
-        Log.d(TAG, "overRideMusicPlayback = " + App.overRideMusicPlayback);
-        if (App.isMusicServiceRunning && App.overRideMusicPlayback) {
-            Log.d(TAG, "play");
-            playButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_pause));
-        } else {
-            playButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_play));
-            Log.d(TAG, "pause");
-        }
+        setPlayButtonImage(App.isMusicPlaying);
+
+        wirelessControl.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                App.wirelessControl = isChecked;
+            }
+        });
     }
 
     @Override
@@ -49,11 +51,7 @@ public class MusicActivity extends AppCompatActivity {
             musicBroadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    if (App.overRideMusicPlayback && intent.hasExtra(Constants.shouldPlayMusic)) {
-                        setPlayButtonImage(intent.getBooleanExtra(Constants.shouldPlayMusic, false));
-
-                    } else if (App.overRideMusicPlayback) setPlayButtonImage(true);
-                    else setPlayButtonImage(false);
+                    setPlayButtonImage(App.isMusicPlaying);
                 }
             };
             registerReceiver(musicBroadcastReceiver, new IntentFilter(Constants.MUSIC_UPDATE_INTENT_FILTER));
@@ -62,12 +60,6 @@ public class MusicActivity extends AppCompatActivity {
 
     @Click(R.id.button_play)
     protected void toggleMusic() {
-
-        App.overRideMusicPlayback = !App.overRideMusicPlayback;
-        setPlayButtonImage(App.overRideMusicPlayback);
-
-        Log.d(TAG, "App.override = " + App.overRideMusicPlayback);
-
         Intent intent = new Intent(Constants.MUSIC_UPDATE_INTENT_FILTER);
         sendBroadcast(intent);
     }

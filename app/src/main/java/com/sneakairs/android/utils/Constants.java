@@ -22,11 +22,13 @@ public class Constants {
      * Messages to be sent via bluetooth in different events:
      */
 
-    public static final String MESSAGE_EVENT_REMINGER = "";
-    public static final String MESSAGE_EVENT_TURN_LEFT = "";
-    public static final String MESSAGE_EVENT_TURN_RIGHT = "";
-    public static final String MESSAGE_NAVIGATION_ENDED = "";
+    public static final String MESSAGE_EVENT_REMINGER = "h";
+    public static final String MESSAGE_EVENT_TURN_LEFT = "l";
+    public static final String MESSAGE_EVENT_TURN_RIGHT = "r";
+    public static final String MESSAGE_NAVIGATION_ENDED = "e";
+    public static final String MESSAGE_MUSIC_TOGGLE = "m";
 
+    public static final String KEY_MUSIC_INTENT_DATA = "music-toggle-data";
 
     /**
      * Some important constants
