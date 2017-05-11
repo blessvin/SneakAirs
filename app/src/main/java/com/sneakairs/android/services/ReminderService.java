@@ -135,12 +135,16 @@ public class ReminderService extends Service {
         sendBroadcast(intentNew);
 
         Log.d(TAG, "buzzReminderCount = " + App.buzzRemindersList.size());
-        if (App.buzzRemindersList.size() > 0 && counter < 10) {
-            counter++;
+        Log.d(TAG, "counter = " + counter);
+        if (App.buzzRemindersList.size() > 0 && counter == 0) {
             Intent intent = new Intent(Constants.REMINDER_UPDATE_INTENT_FILTER);
             intent.putExtra("buzzReminders", gson.toJson(App.buzzRemindersList));
             sendBroadcast(intent);
         }
+
+        counter++;
+        if (counter == 11) counter = 0;
+
     }
 
     private void getLocation() {
