@@ -63,5 +63,5 @@ dependencies {
     compile 'com.parse:parse-android:1.14.1'
     testCompile 'junit:junit:4.12'
     compile 'pl.bclogic:pulsator4droid:1.0.3'
-    compile 'com.pkmmte.view:circularimageview:1.1'
+    compile 'com.sylversky.fontreplacer:fontreplacer:1.0'
 }

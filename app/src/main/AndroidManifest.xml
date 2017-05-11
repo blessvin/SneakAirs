@@ -22,8 +22,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.ConnectionActivity_" />
-        <activity android:name=".activities.DirectionsActivity_" />
-        <activity android:name=".activities.StartActivity_"></activity>
+        <activity android:name=".activities.DirectionsActivity_"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".activities.StartActivity_"/>
         <activity android:name=".activities.reminders.ReminderActivity_" />
         <activity android:name=".activities.reminders.ViewRemindersActivity_" />
 

@@ -6,133 +6,129 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
-    <ScrollView
-        android:id="@+id/scrollView_views"
+    <LinearLayout
+        android:id="@+id/linearLayout_line"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/text_view_destination"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:text="Destination"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/button_destination"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="20dp"
+            android:padding="10dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_action_flag"
+            android:background="@drawable/circle"/>
+
+        <FrameLayout
+            android:layout_width="2dp"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:layout_gravity="center"
+            android:background="@color/black"/>
 
         <LinearLayout
+            android:id="@+id/linearLayout_navigation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/text_view_destination"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginStart="20dp"
-                android:text="Destination"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
-
-            <ImageView
-                android:id="@+id/button_destination"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginTop="20dp"
-                android:padding="10dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_action_flag"
-                android:background="@drawable/circle"/>
-
-            <FrameLayout
-                android:layout_width="2dp"
-                android:layout_height="200dp"
-                android:layout_gravity="center"
-                android:background="@color/black"/>
+            android:visibility="gone">
 
             <LinearLayout
-                android:id="@+id/linearLayout_navigation"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:visibility="gone">
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/distance_covered"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/distance_covered"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:textAlignment="center"
-                        android:textColor="@color/material_green"/>
-
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/button_start_navigation"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_centerInParent="true"
-                    android:padding="20dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_action_navigation"
-                    android:tint="@color/white"
-                    android:background="@drawable/circular_background"
-                    android:visibility="visible"/>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/check_points_covered"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:textAlignment="center"
-                        android:textSize="14sp"
-                        android:textColor="@color/material_green"/>
-
-                </LinearLayout>
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:textAlignment="center"
+                    android:textColor="@color/material_green"/>
 
             </LinearLayout>
 
-            <FrameLayout
-                android:layout_width="2dp"
-                android:layout_height="100dp"
-                android:layout_gravity="center"
-                android:background="@color/black"/>
-
             <ImageView
-                android:id="@+id/button_origin"
+                android:id="@+id/button_start_navigation"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
+                android:layout_centerInParent="true"
+                android:padding="20dp"
                 android:layout_gravity="center"
-                android:src="@drawable/icon_origin"
-                android:background="@drawable/circle"/>
+                android:src="@drawable/ic_action_navigation"
+                android:tint="@color/white"
+                android:background="@drawable/circular_background"
+                android:visibility="visible"/>
 
-            <TextView
-                android:id="@+id/text_view_origin"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginBottom="20dp"
-                android:text="Origin"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/check_points_covered"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:textAlignment="center"
+                    android:textSize="14sp"
+                    android:textColor="@color/material_green"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 
-    </ScrollView>
+        <FrameLayout
+            android:layout_width="2dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:background="@color/black"/>
+
+        <ImageView
+            android:id="@+id/button_origin"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:src="@drawable/icon_origin"
+            android:background="@drawable/circle"/>
+
+        <TextView
+            android:id="@+id/text_view_origin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="20dp"
+            android:text="Origin"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/map_relativeLayout"

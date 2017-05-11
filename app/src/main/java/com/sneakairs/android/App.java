@@ -13,6 +13,8 @@ import com.sneakairs.android.models.ReminderGeoPoint;
 import com.sneakairs.android.models.ReminderGeoPointList;
 import com.sneakairs.android.utils.CacheUtils;
 import com.sneakairs.android.utils.Constants;
+import com.sylversky.fontreplacer.FontReplacer;
+import com.sylversky.fontreplacer.Replacer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +58,11 @@ public class App extends Application {
         super.onCreate();
         Log.d(TAG, "App Started");
         context = getApplicationContext();
+
+        Replacer replacer = FontReplacer.Build(getApplicationContext());
+        replacer.setDefaultFont("century_gothic.ttf");
+        replacer.setBoldFont("century_gothic_bold.ttf");
+        replacer.applyFont();
 
         Realm.init(this);
 

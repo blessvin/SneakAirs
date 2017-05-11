@@ -41,6 +41,8 @@ public class MusicActivity extends AppCompatActivity {
                 App.wirelessControl = isChecked;
             }
         });
+
+        wirelessControl.setChecked(App.wirelessControl);
     }
 
     @Override

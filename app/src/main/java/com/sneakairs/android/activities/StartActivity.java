@@ -125,12 +125,13 @@ public class StartActivity extends AppCompatActivity {
     protected void afterViews() {
         askPermissions();
 
+        Log.d(TAG, "Count = " + App.buzzRemindersList.size());
         if (App.buzzRemindersList.size() > 0) {
             adaptor = new RemindersListAdaptor(App.buzzRemindersList, this);
             recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
             recyclerView.setAdapter(adaptor);
             setEmptyView(false);
-        }
+        } else setEmptyView(true);
 
         if (!App.isReminderServiceRunning && App.remindersList != null && App.remindersList.size() > 0) {
             startService(new Intent(this, ReminderService.class));
@@ -156,6 +157,7 @@ public class StartActivity extends AppCompatActivity {
     }
 
     private void setEmptyView(boolean isEmptyView) {
+        Log.d(TAG, "SetEmptyView called with " + isEmptyView);
         if (isEmptyView) {
             linearLayout.setVisibility(View.GONE);
             emptyMessage.setVisibility(View.VISIBLE);

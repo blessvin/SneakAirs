@@ -77,7 +77,8 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
 
     @ViewById(R.id.button_origin) ImageView buttonOrigin;
     @ViewById(R.id.button_destination) ImageView buttonDestination;
-    @ViewById(R.id.scrollView_views) ScrollView scrollView_views;
+//    @ViewById(R.id.scrollView_views) ScrollView scrollView_views;
+    @ViewById(R.id.linearLayout_line) LinearLayout linearLayoutViews;
     @ViewById(R.id.button_start_navigation) ImageView buttonStartNavigation;
     @ViewById(R.id.linearLayout_navigation) LinearLayout linearLayoutNavigation;
 
@@ -108,16 +109,16 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
 
     @Click(R.id.button_origin)
     protected void buttonOriginClicked() {
-//        linearLayoutViews.setVisibility(View.GONE);
-        scrollView_views.setVisibility(View.GONE);
+        linearLayoutViews.setVisibility(View.GONE);
+//        scrollView_views.setVisibility(View.GONE);
         mapRelativeLayout.setVisibility(View.VISIBLE);
         typeOfLocation = 0;
     }
 
     @Click(R.id.button_destination)
     protected void buttonDestinationClicked() {
-//        linearLayoutViews.setVisibility(View.GONE);
-        scrollView_views.setVisibility(View.GONE);
+        linearLayoutViews.setVisibility(View.GONE);
+//        scrollView_views.setVisibility(View.GONE);
         mapRelativeLayout.setVisibility(View.VISIBLE);
         typeOfLocation = 1;
     }
@@ -160,7 +161,8 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
     @Click(R.id.submit_button)
     void submitButtonClick() {
         mapRelativeLayout.setVisibility(View.GONE);
-        scrollView_views.setVisibility(View.VISIBLE);
+//        scrollView_views.setVisibility(View.VISIBLE);
+        linearLayoutViews.setVisibility(View.VISIBLE);
 
         switch (typeOfLocation) {
             case 0:
@@ -263,6 +265,7 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
             buttonStartNavigation.startAnimation(blinkAnimation);
 
             updateTextViews();
+            enableButtons(false);
         }
     }
 
@@ -391,6 +394,7 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
                 buttonStartNavigation.startAnimation(blinkAnimation);
                 Toast.makeText(getApplicationContext(), "Navigation started", Toast.LENGTH_SHORT).show();
                 updateTextViews();
+                enableButtons(false);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -405,6 +409,18 @@ public class DirectionsActivity extends AppCompatActivity implements GoogleApiCl
         distanceCoveredTextView.setText(distance + "\n" + "covered");
         String text = String.valueOf(App.checkPointsCovered) + "\n checkpoint(s) reached";
         checkPointsCoveredTextView.setText(text);
+    }
+
+    private void enableButtons(boolean shouldEnable) {
+        if (shouldEnable) {
+            buttonOrigin.setClickable(true);
+            buttonDestination.setClickable(true);
+            buttonStartNavigation.setClickable(true);
+        } else {
+            buttonOrigin.setClickable(false);
+            buttonDestination.setClickable(false);
+            buttonStartNavigation.setClickable(false);
+        }
     }
 }
 

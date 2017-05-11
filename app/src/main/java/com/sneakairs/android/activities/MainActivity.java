@@ -13,6 +13,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
     @ViewById(R.id.android_device) ImageView androidDevice;
     @ViewById(R.id.arduino_logo) ImageView arduinoLogo;
     @ViewById(R.id.andruido) ImageView andruidoLogo;
+    @ViewById(R.id.text_view_status) TextView statusView;
 
     Animation animFadeIn, animFadeOut, animZoomIn, animZoomOut;
 
@@ -51,6 +53,12 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
     @AfterViews
     protected void afterViews() {
+        if (App.isBluetoothServiceRunning) {
+            Intent intent = new Intent(this, StartActivity_.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
 
         // load animations
         animFadeIn = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
@@ -64,11 +72,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         animZoomIn.setAnimationListener(this);
         animZoomOut.setAnimationListener(this);
 
-        if (App.isBluetoothServiceRunning) {
-            Intent intent = new Intent(this, StartActivity_.class);
-            startActivity(intent);
-            finish();
-        }
+        statusView.setText("Click on the phone");
 
         context = this;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -92,39 +96,8 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
     @Override
     public void onAnimationStart(Animation animation) {
-
-    }
-
-    @Override
-    public void onAnimationEnd(Animation animation) {
-        if (animation == animFadeIn) {
-            Toast.makeText(context, "Found one Arduino", Toast.LENGTH_LONG).show();
-        }
-
-        if (animation == animFadeOut) {
-            androidDevice.setVisibility(View.GONE);
-        }
-
-        if (animation == animZoomOut) {
-            arduinoLogo.setVisibility(View.GONE);
-        }
-
-        if (animation == animZoomIn) {
-            Toast.makeText(context, "Connection Established!", Toast.LENGTH_SHORT).show();
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Intent intent = new Intent(context, StartActivity_.class);
-                    intent.putExtra(EXTRA_ADDRESS, App.deviceMACAddress);
-                    if (getIntent().hasExtra("navigationPointsList"))
-                        intent.putExtra("navigationPointsList", getIntent().getStringExtra("navigationPointsList"));
-
-                    startActivity(intent);
-                    finish();
-                }
-            }, 1000);
-        }
+        if (animation == animZoomIn)
+            statusView.setText("Connection Established!");
     }
 
     @Override
@@ -135,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
     @Click(R.id.android_device)
     protected void androidDeviceClicked() {
         pulsatorLayout.start();
-        Toast.makeText(context, "Searching devices", Toast.LENGTH_SHORT).show();
+        statusView.setText("Searching devices...");
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -150,9 +123,8 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
     @Click(R.id.arduino_logo)
     protected void arduinoClicked() {
 
-        if (!pulsatorLayout.isStarted()) pulsatorLayout.start();
+        statusView.setText("Connecting...");
 
-        Toast.makeText(context, "Connecting...", Toast.LENGTH_SHORT).show();
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -162,5 +134,29 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
                 arduinoLogo.startAnimation(animZoomOut);
             }
         }, 2000);
+    }
+
+    @Override
+    public void onAnimationEnd(Animation animation) {
+        if (animation == animFadeIn) {
+            statusView.setText("Found one Arduino.\nClick to connect.");
+        }
+
+        if (animation == animFadeOut) {
+            androidDevice.setVisibility(View.GONE);
+        }
+
+        if (animation == animZoomOut) {
+            arduinoLogo.setVisibility(View.GONE);
+        }
+
+        if (animation == animZoomIn) {
+            Intent intent = new Intent(context, StartActivity_.class);
+            intent.putExtra(EXTRA_ADDRESS, App.deviceMACAddress);
+            if (getIntent().hasExtra("navigationPointsList"))
+                intent.putExtra("navigationPointsList", getIntent().getStringExtra("navigationPointsList"));
+            startActivity(intent);
+            finish();
+        }
     }
 }
