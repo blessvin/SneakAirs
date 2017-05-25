@@ -141,6 +141,7 @@ public class BluetoothService extends Service {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     connectedThread.write(intent.getStringExtra(Constants.bluetooth_send_message));
+                    Log.d(TAG, "Sent " + intent.getStringExtra(Constants.bluetooth_send_message) + " to bluetooth client");
                 }
             };
         }

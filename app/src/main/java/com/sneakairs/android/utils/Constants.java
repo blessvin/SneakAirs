@@ -39,4 +39,8 @@ public class Constants {
 
     public static final String REMINDERS_LIST_UPDATED_INTENT_FILTER = "reminders-list-updated";
 
+    //MacAddresses for clients
+    public static final String mac_address_1 = "98:D3:31:20:05:CC";
+    public static final String mac_address_2 = "98:D3:31:20:04:8A";
+
 }

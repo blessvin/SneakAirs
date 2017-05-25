@@ -36,7 +36,7 @@ public class App extends Application {
     public static List<ReminderGeoPoint> remindersList = new ArrayList<>();
     public static List<ReminderGeoPoint> buzzRemindersList = new ArrayList<>();
     public static List<NavigationPoint> navigationPoints = new ArrayList<>();
-    public static String deviceMACAddress = "98:D3:31:20:05:CC";
+    public static String deviceMACAddress = Constants.mac_address_1;
     public static boolean shouldPlayMusic = false;
 //    public static boolean overRideMusicPlayback = false;
 
