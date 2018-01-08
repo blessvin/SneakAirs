@@ -27,7 +27,7 @@ Each shoe has a vibrotactile tickler in it. If the user is to turn left, the lef
 Users can predeifne a location to be reminded at about something. Say a bus stop.
 If the user approaches the location, the app sends a signal and both shoes soft vibrate indicating they have reached the stop and it's time to get down.
 
-NOTE: Please note that no computation is done in the shoes and no GPS module is present. The project uses the GPS data available from the user's phone. All of the computational work is done within the app on the phone. The shoes are only programmed to vibrate when a signal is received.
+NOTE: No computation is done in the shoes and no GPS module is present. The project uses the GPS data available from the user's phone. All of the computational work is done within the app on the phone. The shoes are only programmed to vibrate when a signal is received.
 
 ### Prerequisites
 
