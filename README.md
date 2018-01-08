@@ -15,18 +15,15 @@ The idea behind this project was to let users immerse themselves in their surrou
 
 ## Workflow
 
-This project aimed to create a working proof-of-concept of an Android app coupled with a pair of shoes.
-A user using this app first needs to pair the app via bluetooth with the shoes.
-Then the user can select a destination on an implementation of Google Maps.
-The app then fetches directions to the destination from the user's present location using the Google Maps Directions API.
+* This project aimed to create a working proof-of-concept of an Android app coupled with a pair of shoes.
+* A user using this app first needs to pair the app via bluetooth with the shoes.
+* Then the user can select a destination on an implementation of Google Maps.
+* The app then fetches directions to the destination from the user's present location using the Google Maps Directions API.
 The fetched directions are stored locally on the Android smartphone. 
-
-Once the user begins navigation, the app tracks the user's location and keeps checking if they have reached an intersection.
-If so, the app sends a signal via short-range bluetooth connection to the shoes. 
+* Once the user begins navigation, the app tracks the user's location and keeps checking if they have reached an intersection. If so, the app sends a signal via short-range bluetooth connection to the shoes. 
 Each shoe has a vibrotactile tickler in it. If the user is to turn left, the left shoe tickles or right shoe if he's to turn right.
 
-We added an additional functionality of location based reminders.
-
+* We added an additional functionality of location based reminders.
 Users can predeifne a location to be reminded at about something. Say a bus stop.
 If the user approaches the location, the app sends a signal and both shoes soft vibrate indicating they have reached the stop and it's time to get down.
 
