@@ -40,10 +40,10 @@ To download and run the code you need:
 
 ### Hardware parts used for the shoes:
 
-* Arduino Nano microcontroller 
-* Bluetooth Module HC-05
-* Any standard battery for arduino
-* Vibration motors for Arduino
+* [Arduino Nano microcontroller](https://www.amazon.com/gp/aw/d/B0713XK923/ref=mp_s_a_1_3?ie=UTF8&qid=1515420839&sr=8-3&pi=AC_SX236_SY340_QL65&keywords=arduino+nano&dpPl=1&dpID=51d1hIDOGxL&ref=plSrch)
+* [Bluetooth Module HC-05](https://www.amazon.com/gp/aw/d/B074GMQ6G3/ref=mp_s_a_1_7?ie=UTF8&qid=1515420732&sr=8-7&pi=AC_SX236_SY340_FMwebp_QL65&keywords=hc05+bluetooth+module&dpPl=1&dpID=5126rOXcenL&ref=plSrch)
+* Any standard battery pack for arduino (we used Duracell)
+* [Vibration motors for Arduino](https://www.amazon.com/Vibrating-Vibration-Arduino-Projects-9000RPM/dp/B075V4HV31)
 
 
 ## License
