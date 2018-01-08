@@ -1,14 +1,12 @@
 # SneakAirs 
 
-This is the Final Year Capstone Project submission (May 2017) by:
+This is the Final Year Capstone Project submission (May 2017) at Veermata Jijabai Technological Institute by:
 
 * Sumod Kulkarni (131090050)
 * Pranav Nayak (131090056)
 * Prit Gala (131090044)
 * Smitesh Modak (131090045)
 * Yash Beri (131090047)
-
-
 
 ## Idea
 
