@@ -1,12 +1,14 @@
 # SneakAirs 
 
-This project was completed as the Final Year Capstone Project by:
+This is the Final Year Capstone Project submission (May 2017) by:
 
 * Sumod Kulkarni (131090050)
 * Pranav Nayak (131090056)
 * Prit Gala (131090044)
 * Smitesh Modak (131090045)
 * Yash Beri (131090047)
+
+
 
 ## Idea
 
@@ -24,14 +26,14 @@ The fetched directions are stored locally on the Android smartphone.
 Each shoe has a vibrotactile tickler in it. If the user is to turn left, the left shoe tickles or right shoe if he's to turn right.
 
 * We added an additional functionality of location based reminders.
-Users can predeifne a location to be reminded at about something. Say a bus stop.
+Users can predefine a location to be reminded at about something. Say a bus stop.
 If the user approaches the location, the app sends a signal and both shoes soft vibrate indicating they have reached the stop and it's time to get down.
 
 NOTE: No computation is done in the shoes and no GPS module is present. The project uses the GPS data available from the user's phone. All of the computational work is done within the app on the phone. The shoes are only programmed to vibrate when a signal is received.
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+To download and run the code you need:
 
 * Android Studio 2.3 or above
 * Java JDK 1.8
