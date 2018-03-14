@@ -54,3 +54,7 @@ This project has been open-sourced and is licensed under the MIT License - https
 
 * This project was inspired from a similar existing project which can be found at: www.dhairyadand.com/works/supershoes
 
+## License
+
+* This project has been open-sourced under the [MIT License](https://opensource.org/licenses/MIT)
+
